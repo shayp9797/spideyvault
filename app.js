@@ -1,7 +1,24 @@
 const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 let catalogue=[],filtered=[],statuses=JSON.parse(localStorage.getItem('sv-statuses')||'{}'),details=JSON.parse(localStorage.getItem('sv-details')||'{}');
 const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(n||0);const save=()=>{localStorage.setItem('sv-statuses',JSON.stringify(statuses));localStorage.setItem('sv-details',JSON.stringify(details))};
-async function init(){catalogue=await fetch('/data/catalogue.json').then(r=>r.json());catalogue.forEach(x=>{if(!statuses[x.id])statuses[x.id]='Need'});fillFilters();bind();render();checkConnections();if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js')}
+async function init(){
+  try {
+    const r=await fetch('/data/catalogue.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('Catalogue file returned '+r.status);
+    catalogue=await r.json();
+  } catch(e) {
+    console.warn('Catalogue JSON failed; using embedded fallback.',e);
+    catalogue=window.SPIDEYVAULT_CATALOGUE||[];
+  }
+  if(!Array.isArray(catalogue)||!catalogue.length){
+    document.querySelector('#catalogue').innerHTML='<div class=\"notice\"><strong>Catalogue failed to load.</strong><br>Confirm that <code>data/catalogue.json</code> and <code>data/catalogue.js</code> are in the GitHub repository, then redeploy.</div>';
+    document.querySelector('#resultCount').textContent='0 items';
+    return;
+  }
+  catalogue.forEach(x=>{if(!statuses[x.id])statuses[x.id]='Need'});
+  fillFilters();bind();render();checkConnections();
+  if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
 function fillFilters(){[...new Set(catalogue.map(x=>x.type).filter(Boolean))].sort().forEach(v=>$('#typeFilter').add(new Option(v,v)));[...new Set(catalogue.map(x=>x.character).filter(Boolean))].sort().forEach(v=>$('#characterFilter').add(new Option(v,v)))}
 function bind(){$$('.tab').forEach(b=>b.onclick=()=>showView(b.dataset.view));['searchInput','statusFilter','typeFilter','characterFilter','sortBy'].forEach(id=>$('#'+id).addEventListener(id==='searchInput'?'input':'change',render));$('#exportBtn').onclick=$('#settingsExport').onclick=exportData;$('#importInput').onchange=importData;$('#resetBtn').onclick=()=>{if(confirm('Reset all statuses and personal details?')){statuses={};details={};save();location.reload()}};$('#refreshReleases').onclick=loadReleases;$('.dialog-close').onclick=()=>$('#detailDialog').close()}
 function showView(v){$$('.tab').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$$('.view').forEach(x=>x.classList.remove('active'));$('#'+v+'View').classList.add('active');if(v==='releases')loadReleases()}

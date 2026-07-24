@@ -41,3 +41,7 @@ A private installable Spider-Person Funko tracker with:
 ## Updating through ChatGPT
 
 Export a backup from Settings before major changes. Upload this entire ZIP plus your requested changes. Collection statuses remain in your browser unless you clear site data or move devices; use Export/Import to transfer them.
+
+
+## Catalogue loading fix
+This build includes both `data/catalogue.json` and an embedded `data/catalogue.js` fallback. Upload the contents of this folder to the repository root, not the containing folder.
