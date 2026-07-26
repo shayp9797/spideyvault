@@ -27,3 +27,7 @@ Batch 1 adds verified official Funko product images for Scarlet Spider #1232, Sc
 
 ## V1.4 image batch 2
 Added 13 additional catalogue image assignments using verified official Funko product artwork. Existing local collection data remains unchanged.
+
+
+## V1.5 Image Batch 3
+Added eight verified official Funko image assignments for Across the Spider-Verse catalogue entries: Miles Morales #1223, Spider-Gwen #1224, Spider-Man 2099 #1225, Spider-Man India #1227 (standard and FYE deco), Spider-Woman #1228 (standard/sticker entries), and Spider-Punk #1231.
