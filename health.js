@@ -1,1 +1,0 @@
-import{json,env}from'./_lib.js';export default function handler(req,res){json(res,200,{ebay:!!(env('EBAY_CLIENT_ID')&&env('EBAY_CLIENT_SECRET')),supabase:!!(env('SUPABASE_URL')&&env('SUPABASE_SECRET_KEY')),cron:!!env('CRON_SECRET')})}
