@@ -1,5 +1,0 @@
-export function json(res,status,data){res.status(status).setHeader('content-type','application/json');res.send(JSON.stringify(data))}
-export function env(name){return process.env[name]||''}
-export async function supabase(path,{method='GET',body}={}){const url=env('SUPABASE_URL'),key=env('SUPABASE_SECRET_KEY');if(!url||!key)throw new Error('Supabase is not configured');const r=await fetch(`${url}/rest/v1/${path}`,{method,headers:{apikey:key,authorization:`Bearer ${key}`,'content-type':'application/json',prefer:'return=representation'},body:body?JSON.stringify(body):undefined});if(!r.ok)throw new Error(`Supabase ${r.status}: ${await r.text()}`);const t=await r.text();return t?JSON.parse(t):[]}
-export function median(a){if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y),m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2}
-export function cleanPrices(a){const vals=a.filter(x=>Number.isFinite(x)&&x>3&&x<5000).sort((x,y)=>x-y);if(vals.length<5)return vals;const q1=vals[Math.floor(vals.length*.25)],q3=vals[Math.floor(vals.length*.75)],iqr=q3-q1;return vals.filter(x=>x>=q1-1.5*iqr&&x<=q3+1.5*iqr)}
