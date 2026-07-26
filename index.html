@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="SpideyVault — your personal Spider-Man Funko collection tracker." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>SpideyVault</title>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">SV</span><div><strong>SpideyVault</strong><small>Spider-Man Funko Collection</small></div></div>
+    <button id="installBtn" class="ghost hidden">Install</button>
+  </header>
+
+  <main>
+    <section id="dashboardView" class="view active">
+      <div class="hero">
+        <p class="eyebrow">YOUR COLLECTION</p>
+        <h1>Welcome back, Shay.</h1>
+        <p>Track every Spider-Person Pop in one private vault.</p>
+      </div>
+      <div id="stats" class="stats"></div>
+      <div class="section-head"><h2>Collection progress</h2><span id="progressLabel"></span></div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="section-head"><h2>Recently updated</h2><button data-nav="catalogue" class="text-btn">View all</button></div>
+      <div id="recentGrid" class="card-grid compact"></div>
+    </section>
+
+    <section id="catalogueView" class="view">
+      <div class="page-title"><div><p class="eyebrow">MASTER CATALOGUE</p><h1>Find your next Pop</h1></div><span id="resultCount" class="pill"></span></div>
+      <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Search name, number, line or sticker" /></div>
+      <div class="filter-row" id="statusFilters">
+        <button class="chip active" data-status="All">All</button><button class="chip" data-status="Owned">Owned</button><button class="chip" data-status="Need">Needed</button><button class="chip" data-status="Incoming">Incoming</button>
+      </div>
+      <div class="select-row"><select id="typeFilter"><option value="All">All types</option></select><select id="sortSelect"><option value="name">Name A–Z</option><option value="number">Pop number</option><option value="value-desc">Highest value</option><option value="updated">Recently updated</option></select></div>
+      <div id="catalogueGrid" class="card-grid"></div>
+    </section>
+
+    <section id="backupView" class="view">
+      <div class="page-title"><div><p class="eyebrow">PRIVATE & LOCAL</p><h1>Backup your vault</h1></div></div>
+      <div class="panel"><h2>Export backup</h2><p>Downloads all collection statuses, purchase prices and notes as a JSON file.</p><button id="exportBtn" class="primary">Export SpideyVault backup</button></div>
+      <div class="panel"><h2>Import backup</h2><p>Restore a previous SpideyVault JSON backup. Existing personal data will be replaced.</p><label class="file-btn">Choose backup<input id="importInput" type="file" accept="application/json,.json" /></label></div>
+      <div class="panel danger"><h2>Reset local data</h2><p>Returns every item to Needed and removes purchase prices and notes from this device.</p><button id="resetBtn" class="danger-btn">Reset vault</button></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-nav="dashboard"><span>◈</span>Dashboard</button>
+    <button class="nav-btn" data-nav="catalogue"><span>▦</span>Catalogue</button>
+    <button class="nav-btn" data-nav="backup"><span>⇅</span>Backup</button>
+  </nav>
+
+  <dialog id="detailDialog"><div id="detailContent"></div></dialog>
+  <div id="toast" class="toast"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
