@@ -19,3 +19,7 @@ A private, installable Spider-Man Funko collection tracker.
 Upload all files in this folder to the root of the existing `spideyvault` repository and commit the changes. Files with matching names will be replaced automatically. GitHub Pages will redeploy after the commit.
 
 Collection data already saved on a device remains in that browser because the local-storage key has not changed.
+
+
+## Image catalogue progress
+Batch 1 adds verified official Funko product images for Scarlet Spider #1232, Scarlet Spider with Hoodie #1453, and The Amazing Spider-Man Unmasked #1171.
