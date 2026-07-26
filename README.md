@@ -23,3 +23,7 @@ Collection data already saved on a device remains in that browser because the lo
 
 ## Image catalogue progress
 Batch 1 adds verified official Funko product images for Scarlet Spider #1232, Scarlet Spider with Hoodie #1453, and The Amazing Spider-Man Unmasked #1171.
+
+
+## V1.4 image batch 2
+Added 13 additional catalogue image assignments using verified official Funko product artwork. Existing local collection data remains unchanged.
