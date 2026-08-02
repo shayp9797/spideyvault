@@ -1,11 +1,10 @@
-# SpideyVault V2.1 — MCU Image Cleanup
+# SpideyVault V2.2 — MCU Brightness Fix
 
-This correction build keeps the existing MCU mappings but visually keys out the white backgrounds in the app so the figures sit naturally on the dark SpideyVault cards.
+This build removes the MCU-only blend/filter treatment that made product images appear dark.
 
-Corrections included:
-- Removed the incorrect Iron Spider #433 and #442 catalogue records. The valid MCU Iron Spider records already exist as #287, #300, #305, #574 and #1142.
-- Removed the three duplicate No Way Home 8-pack inclusion records (#1157, #1158 and #1159).
-- Added a dedicated treatment for POP's Today product images to blend away white backgrounds while preserving the existing verified figure mappings.
-- Bumped the offline cache version.
-
-Collection statuses, prices and notes remain stored separately in the browser.
+## Included
+- Restores all MCU images to normal brightness and opacity.
+- Keeps the corrected MCU catalogue mappings from V2.1.
+- Keeps Iron Spider #433 and #442 removed.
+- Keeps the duplicate No Way Home 8-pack inclusion records removed.
+- Updates the service-worker cache so the fix reaches the installed PWA.

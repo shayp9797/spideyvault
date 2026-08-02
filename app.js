@@ -61,8 +61,7 @@ function imageMarkup(item, size = 'card') {
   const number = escapeHtml(item.number || 'SV');
   const alt = escapeHtml(`${item.name} ${item.variant || ''}`.trim());
   if (url) {
-    const sourceClass = url.includes('pops.today/images/') ? ' keyed-white-bg' : '';
-    return `<div class="pop-image ${size}${sourceClass}"><img src="${escapeHtml(url)}" alt="${alt}" loading="lazy" referrerpolicy="no-referrer" onload="this.closest('.pop-image').classList.add('has-image')" onerror="this.closest('.pop-image').classList.add('image-error');this.remove()"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
+    return `<div class="pop-image ${size}"><img src="${escapeHtml(url)}" alt="${alt}" loading="lazy" referrerpolicy="no-referrer" onload="this.closest('.pop-image').classList.add('has-image')" onerror="this.closest('.pop-image').classList.add('image-error');this.remove()"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
   }
   return `<div class="pop-image ${size}"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
 }
