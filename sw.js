@@ -1,4 +1,4 @@
-const CACHE='spideyvault-v2.2-mcu-brightness-fix';
+const CACHE='spideyvault-v2.3-mcu-remap';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./catalogue.js','./manifest.webmanifest','./icon.svg','./images/spider-gwen-405.jpeg','./images/spider-gwen-153-unhooded.jpeg'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

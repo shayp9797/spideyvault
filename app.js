@@ -56,12 +56,90 @@ function imageUrl(item) {
   return item.customImageUrl || item.imageUrl || '';
 }
 
+function displayImageUrl(url) {
+  if (!url) return '';
+  if (url.includes('pops.today/images/')) {
+    const clean = url.replace(/^https?:\/\//, '');
+    return `https://images.weserv.nl/?url=${encodeURIComponent(clean)}&output=png`;
+  }
+  return url;
+}
+
+window.handlePopImage = function handlePopImage(img) {
+  const wrap = img.closest('.pop-image');
+  if (wrap) wrap.classList.add('has-image');
+  if (img.dataset.cleanBackground !== 'true' || img.dataset.cleaned === 'true') return;
+
+  try {
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
+    if (!width || !height) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0);
+    const frame = ctx.getImageData(0, 0, width, height);
+    const pixels = frame.data;
+    const seen = new Uint8Array(width * height);
+    const queue = new Int32Array(width * height);
+    let head = 0;
+    let tail = 0;
+
+    const isBackground = (index) => {
+      const offset = index * 4;
+      const r = pixels[offset];
+      const g = pixels[offset + 1];
+      const b = pixels[offset + 2];
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      return min >= 218 && max - min <= 28;
+    };
+
+    const add = (index) => {
+      if (index < 0 || index >= width * height || seen[index] || !isBackground(index)) return;
+      seen[index] = 1;
+      queue[tail++] = index;
+    };
+
+    for (let x = 0; x < width; x += 1) {
+      add(x);
+      add((height - 1) * width + x);
+    }
+    for (let y = 0; y < height; y += 1) {
+      add(y * width);
+      add(y * width + width - 1);
+    }
+
+    while (head < tail) {
+      const index = queue[head++];
+      const x = index % width;
+      const y = Math.floor(index / width);
+      pixels[index * 4 + 3] = 0;
+      if (x > 0) add(index - 1);
+      if (x + 1 < width) add(index + 1);
+      if (y > 0) add(index - width);
+      if (y + 1 < height) add(index + width);
+    }
+
+    ctx.putImageData(frame, 0, 0);
+    img.dataset.cleaned = 'true';
+    img.removeAttribute('crossorigin');
+    img.src = canvas.toDataURL('image/png');
+  } catch (error) {
+    console.warn('SpideyVault could not clean this image background.', error);
+  }
+};
+
 function imageMarkup(item, size = 'card') {
-  const url = imageUrl(item);
+  const originalUrl = imageUrl(item);
+  const url = displayImageUrl(originalUrl);
+  const shouldClean = originalUrl.includes('pops.today/images/');
   const number = escapeHtml(item.number || 'SV');
   const alt = escapeHtml(`${item.name} ${item.variant || ''}`.trim());
   if (url) {
-    return `<div class="pop-image ${size}"><img src="${escapeHtml(url)}" alt="${alt}" loading="lazy" referrerpolicy="no-referrer" onload="this.closest('.pop-image').classList.add('has-image')" onerror="this.closest('.pop-image').classList.add('image-error');this.remove()"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
+    return `<div class="pop-image ${size}"><img src="${escapeHtml(url)}" alt="${alt}" loading="lazy" referrerpolicy="no-referrer" ${shouldClean ? 'crossorigin="anonymous" data-clean-background="true"' : ''} onload="handlePopImage(this)" onerror="this.closest('.pop-image').classList.add('image-error');this.remove()"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
   }
   return `<div class="pop-image ${size}"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
 }
