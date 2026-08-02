@@ -1,17 +1,11 @@
-# SpideyVault V1.8 — Spider-Gwen corrections
+# SpideyVault V2.1 — MCU Image Cleanup
 
-This build makes only the requested Spider-Gwen catalogue and image corrections:
+This correction build keeps the existing MCU mappings but visually keys out the white backgrounds in the app so the figures sit naturally on the dark SpideyVault cards.
 
-- Uses the supplied boxed image for Spider-Gwen #405.
-- Uses the supplied boxed image for Spider-Gwen #153.
-- Corrects #146 to the standard Spider-Gwen entry and removes its duplicate mislabeled variant.
-- Adds the missing #152 Spider-Gwen Unmasked (Walgreens) entry.
-- Corrects #153 to Spider-Gwen Unhooded (Hot Topic).
-- Updates the offline cache so the two local images load on GitHub Pages and in the installed PWA.
+Corrections included:
+- Removed the incorrect Iron Spider #433 and #442 catalogue records. The valid MCU Iron Spider records already exist as #287, #300, #305, #574 and #1142.
+- Removed the three duplicate No Way Home 8-pack inclusion records (#1157, #1158 and #1159).
+- Added a dedicated treatment for POP's Today product images to blend away white backgrounds while preserving the existing verified figure mappings.
+- Bumped the offline cache version.
 
-Catalogue count remains 272 because one duplicate #146 record was removed and the missing #152 record was added.
-
-
-## V1.9 MCU movie image batch
-
-Added image mappings for 44 clear MCU movie catalogue records across Spider-Man: Homecoming, Avengers: Infinity War, Avengers: Endgame, Spider-Man: Far From Home and Spider-Man: No Way Home. Existing collection data remains local and unchanged. Three records currently filed under No Way Home were intentionally left untouched because they appear to be non-MCU or misclassified catalogue entries and should be audited separately.
+Collection statuses, prices and notes remain stored separately in the browser.
