@@ -87,16 +87,21 @@ window.handlePopImage = function handlePopImage(img) {
     let head = 0;
     let tail = 0;
 
-    const isBackground = (index) => {
+    // Only remove neutral, very light pixels connected to the outside edge.
+    // This preserves white eyes, webbing and suit details inside the figure.
+    const bgScore = (index) => {
       const offset = index * 4;
       const r = pixels[offset];
       const g = pixels[offset + 1];
       const b = pixels[offset + 2];
       const max = Math.max(r, g, b);
       const min = Math.min(r, g, b);
-      return min >= 218 && max - min <= 28;
+      return { min, spread: max - min };
     };
-
+    const isBackground = (index) => {
+      const { min, spread } = bgScore(index);
+      return min >= 224 && spread <= 22;
+    };
     const add = (index) => {
       if (index < 0 || index >= width * height || seen[index] || !isBackground(index)) return;
       seen[index] = 1;
@@ -123,10 +128,55 @@ window.handlePopImage = function handlePopImage(img) {
       if (y + 1 < height) add(index + width);
     }
 
+    // Feather only the pale fringe touching removed background, avoiding a white halo.
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const index = y * width + x;
+        const offset = index * 4;
+        if (pixels[offset + 3] === 0) continue;
+        const touchesClear =
+          pixels[(index - 1) * 4 + 3] === 0 || pixels[(index + 1) * 4 + 3] === 0 ||
+          pixels[(index - width) * 4 + 3] === 0 || pixels[(index + width) * 4 + 3] === 0;
+        if (!touchesClear) continue;
+        const { min, spread } = bgScore(index);
+        if (min > 188 && spread < 38) {
+          const alpha = Math.max(0, Math.min(255, Math.round((255 - min) * 4.2)));
+          pixels[offset + 3] = Math.min(pixels[offset + 3], alpha);
+          // Decontaminate pale edge colour so it blends naturally on the navy card.
+          pixels[offset] = Math.max(0, pixels[offset] - Math.round((255 - alpha) * 0.22));
+          pixels[offset + 1] = Math.max(0, pixels[offset + 1] - Math.round((255 - alpha) * 0.22));
+          pixels[offset + 2] = Math.max(0, pixels[offset + 2] - Math.round((255 - alpha) * 0.22));
+        }
+      }
+    }
+
     ctx.putImageData(frame, 0, 0);
-    img.dataset.cleaned = 'true';
-    img.removeAttribute('crossorigin');
-    img.src = canvas.toDataURL('image/png');
+
+    // Crop excess transparent space, then place the figure on a square transparent canvas.
+    let minX = width, minY = height, maxX = -1, maxY = -1;
+    for (let y = 0; y < height; y += 1) {
+      for (let x = 0; x < width; x += 1) {
+        if (pixels[(y * width + x) * 4 + 3] > 14) {
+          minX = Math.min(minX, x); minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
+        }
+      }
+    }
+    if (maxX >= minX && maxY >= minY) {
+      const cropW = maxX - minX + 1;
+      const cropH = maxY - minY + 1;
+      const pad = Math.round(Math.max(cropW, cropH) * 0.07);
+      const side = Math.max(cropW, cropH) + pad * 2;
+      const clean = document.createElement('canvas');
+      clean.width = side;
+      clean.height = side;
+      const cleanCtx = clean.getContext('2d');
+      cleanCtx.drawImage(canvas, minX, minY, cropW, cropH,
+        Math.round((side - cropW) / 2), Math.round((side - cropH) / 2), cropW, cropH);
+      img.dataset.cleaned = 'true';
+      img.removeAttribute('crossorigin');
+      img.src = clean.toDataURL('image/png');
+    }
   } catch (error) {
     console.warn('SpideyVault could not clean this image background.', error);
   }
