@@ -10,3 +10,8 @@ This build makes only the requested Spider-Gwen catalogue and image corrections:
 - Updates the offline cache so the two local images load on GitHub Pages and in the installed PWA.
 
 Catalogue count remains 272 because one duplicate #146 record was removed and the missing #152 record was added.
+
+
+## V1.9 MCU movie image batch
+
+Added image mappings for 44 clear MCU movie catalogue records across Spider-Man: Homecoming, Avengers: Infinity War, Avengers: Endgame, Spider-Man: Far From Home and Spider-Man: No Way Home. Existing collection data remains local and unchanged. Three records currently filed under No Way Home were intentionally left untouched because they appear to be non-MCU or misclassified catalogue entries and should be audited separately.
