@@ -1,10 +1,12 @@
-# SpideyVault V2.5 — Spider-Verse Image Mapping
+# SpideyVault V2.6 — Spider-Verse Catalogue Corrections
 
-Mapped all catalogue entries from **Spider-Man: Into the Spider-Verse** and **Spider-Man: Across the Spider-Verse**.
+This correction build keeps the V2.5 Spider-Verse image mapping and applies the requested catalogue fixes:
 
-Image priority used:
-1. Official Funko transparent product renders.
-2. Cleaned official product images stored locally where the source had a white canvas.
-3. Clean catalogue/box fallback only where a suitable transparent official render was unavailable.
+- Corrected #1233 from Cyborg Spider-Woman to Miles Morales in Jacket (Target Exclusive).
+- Removed the duplicate #1233 Special Edition sticker record.
+- Removed Medieval Vulture because SpideyVault is limited to Spider-People.
+- Removed the duplicate Peter B. Parker & Mayday #1239 record, retaining the mapped official entry.
+- Removed the incorrect Spider-Gwen #1406 record. Marvel #1406 is Iron Man Mark 3, not a Spider-Verse Pop.
+- Updated the offline cache version.
 
-The local `images` folder includes cleaned assets for Miles Morales #402, Miles Morales #403 and Spider-Gwen #405. Upload those files into the existing GitHub `images` folder.
+Catalogue total: 263 entries.
