@@ -1,12 +1,11 @@
-# SpideyVault V2.6 — Spider-Verse Catalogue Corrections
+# SpideyVault V2.7 — Catalogue Corrections
 
-This correction build keeps the V2.5 Spider-Verse image mapping and applies the requested catalogue fixes:
+Corrections in this build:
 
-- Corrected #1233 from Cyborg Spider-Woman to Miles Morales in Jacket (Target Exclusive).
-- Removed the duplicate #1233 Special Edition sticker record.
-- Removed Medieval Vulture because SpideyVault is limited to Spider-People.
-- Removed the duplicate Peter B. Parker & Mayday #1239 record, retaining the mapped official entry.
-- Removed the incorrect Spider-Gwen #1406 record. Marvel #1406 is Iron Man Mark 3, not a Spider-Verse Pop.
-- Updated the offline cache version.
+- Removed the duplicate Spider-Byte #1230 Special Edition sticker entry; the standard #1230 entry remains.
+- Removed the incorrect Spider-Man 2099 #897 entry. Marvel Pop #897 is Sylvie from Loki, not a Spider-Man Pop.
+- Added official transparent Funko image mappings and corrected catalogue details for Spider-Man #1587 and metallic Spider-Man #1590.
+- Replaced the individual Beyond Amazing 5-Pack inclusion records with one complete Amazon-exclusive 5-Pack entry.
+- The complete set contains Prodigy, The Hornet, Prince of Arachne, Spider-Armor MK I and Spider-Armor MK II.
 
-Catalogue total: 263 entries.
+Upload the root files over the existing GitHub repository files. Existing local collection data remains separate from catalogue data.
