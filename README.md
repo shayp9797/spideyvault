@@ -1,14 +1,11 @@
-# SpideyVault V3.0 — Retro Visual Redesign
+# SpideyVault V3.1 — Refined Retro Cards
 
-Phase 1 visual redesign with a bright Spider-Man-inspired 8-bit game interface.
+Visual refinement of the V3 retro redesign.
 
-## Visual changes
-- Retro pixel HUD dashboard
-- Bright red, blue, cyan and yellow Spider-Man palette
-- Pixel-style catalogue cards and controls
-- Game-style collection progress bar
-- Arcade-inspired navigation and detail panels
-- Fun display and mono fonts with sensible fallbacks
-- Existing catalogue, images and local collection data preserved
-
-Upload all files over the existing GitHub Pages files. Upload the existing `images` folder assets as before if they are not already present.
+- calmer navy catalogue background
+- simplified neutral card borders
+- unified dashboard stat surfaces
+- more card spacing and cleaner metadata panels
+- pixel Spider-Man/web welcome artwork
+- card swoosh-and-expand opening animation
+- catalogue data and personal collection data unchanged

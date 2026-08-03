@@ -319,7 +319,15 @@ document.addEventListener('click', event => {
   if (navigation) navigate(navigation.dataset.nav);
 
   const selectedCard = event.target.closest('.card');
-  if (selectedCard) openDetail(selectedCard.dataset.id);
+  if (selectedCard && !selectedCard.classList.contains('card-opening')) {
+    selectedCard.classList.add('card-opening');
+    const id = selectedCard.dataset.id;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.setTimeout(() => {
+      selectedCard.classList.remove('card-opening');
+      openDetail(id);
+    }, reducedMotion ? 0 : 270);
+  }
 
   if (event.target.id === 'closeDialog') $('#detailDialog').close();
 
