@@ -1,12 +1,13 @@
-# SpideyVault V2.8 — Insomniac Games Image Mapping
+# SpideyVault V2.9.1 — Insomniac Corrections
 
-Mapped the Spider-Man, Spider-Man: Miles Morales and Spider-Man 2 catalogue entries.
+Correction pass for the Insomniac/Gamerverse catalogue.
 
-- Preserved the existing clean official renders for the Miles Morales suit wave.
-- Added mappings for the remaining 2018 Gamerverse entries and older exclusives.
-- Added official transparent Funko renders for Spider-Man 2 hero Pops.
-- Added missing Miles Morales Evolved Suit #976 and City Sounds Suit #1028.
-- Did not add Spider-Man 2 villains such as Venom or Kraven.
-- No generated artwork.
-
-Catalogue entries: 260
+- Corrected #334, #395, #397, #399 and #503 titles/variants and image mappings.
+- Removed duplicate #404.
+- Corrected #467 to the single official Walgreens glow release.
+- Kept both valid #574 variants: standard and Chalice glow.
+- Removed incorrect #776 and #1296 Miles Morales records.
+- Added the correct Purple Reign Suit #839.
+- Added missing Spider-Man 2 Miles Morales Upgraded Suit #970.
+- Corrected Spider-Man 2099 White Suit #1059 to the Marvel Gamerverse / Insomniac Marvel's Spider-Man line, matching its game-branded box.
+- Rechecked the existing Spider-Man 2 line entries.
