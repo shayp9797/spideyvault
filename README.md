@@ -1,3 +1,9 @@
+# SpideyVault V2.9.4 — Missing Insomniac Images Fix
+
+- Replaced broken image URLs for #334, Miles Morales #397, and Negative Suit #399.
+- Uses verified clean boxed + figure product imagery.
+- Catalogue count and all collection IDs remain unchanged.
+
 # SpideyVault V2.9.1 — Insomniac Corrections
 
 Correction pass for the Insomniac/Gamerverse catalogue.
