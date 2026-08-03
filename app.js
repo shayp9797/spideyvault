@@ -1,7 +1,7 @@
 import { catalogue } from './catalogue.js';
 
 const KEY = 'spideyvault-v1';
-const state = { filter: 'All', type: 'All', query: '', sort: 'name', selected: null };
+const state = { filter: 'All', type: 'All', query: '', sort: 'name', selected: null, openOrigin: null, lastStats: null };
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
@@ -209,17 +209,43 @@ function stats() {
   };
 }
 
+function animateNumber(element, from, to, formatter = value => String(Math.round(value))) {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion || from === to) {
+    element.textContent = formatter(to);
+    return;
+  }
+  const start = performance.now();
+  const duration = 520;
+  const tick = now => {
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    element.textContent = formatter(from + (to - from) * eased);
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 function renderStats() {
   const summary = stats();
-  $('#stats').innerHTML = [
-    ['Catalogue', summary.total, '▦'],
-    ['Owned', summary.owned, '✓'],
-    ['Incoming', summary.incoming, '→'],
-    ['Est. value', money(summary.value), '◇']
-  ].map(([label, value, icon]) => `<div class="stat"><span class="stat-icon">${icon}</span><strong>${value}</strong><span>${label}</span></div>`).join('');
+  const previous = state.lastStats || { total: 0, owned: 0, incoming: 0, value: 0, percentage: 0 };
   const percentage = summary.total ? Math.round(summary.owned / summary.total * 100) : 0;
-  $('#progressBar').style.width = `${percentage}%`;
-  $('#progressLabel').textContent = `${percentage}% complete`;
+  const statRows = [
+    ['Catalogue', summary.total, previous.total, '▦', value => String(Math.round(value))],
+    ['Owned', summary.owned, previous.owned, '✓', value => String(Math.round(value))],
+    ['Incoming', summary.incoming, previous.incoming, '→', value => String(Math.round(value))],
+    ['Est. value', summary.value, previous.value, '◇', value => money(Math.round(value))]
+  ];
+  $('#stats').innerHTML = statRows.map(([label, value, from, icon], index) => `<div class="stat stat-enter" style="--stat-delay:${index * 55}ms"><span class="stat-icon">${icon}</span><strong data-stat-value></strong><span>${label}</span></div>`).join('');
+  $$('[data-stat-value]').forEach((element, index) => {
+    const [, value, from, , formatter] = statRows[index];
+    animateNumber(element, from, value, formatter);
+  });
+  const bar = $('#progressBar');
+  bar.style.width = `${previous.percentage || 0}%`;
+  requestAnimationFrame(() => { bar.style.width = `${percentage}%`; });
+  animateNumber($('#progressLabel'), previous.percentage || 0, percentage, value => `${Math.round(value)}% complete`);
+  state.lastStats = { ...summary, percentage };
 }
 
 function card(item) {
@@ -266,12 +292,92 @@ function filtered() {
   return items;
 }
 
-function renderCatalogue() {
+function renderCatalogue(options = {}) {
+  const { animate = false } = options;
+  const grid = $('#catalogueGrid');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const oldRects = new Map();
+  if (animate && !reducedMotion) {
+    grid.querySelectorAll('.card[data-id]').forEach(element => oldRects.set(element.dataset.id, element.getBoundingClientRect()));
+  }
   const items = filtered();
   $('#resultCount').textContent = `${items.length} items`;
-  $('#catalogueGrid').innerHTML = items.length
+  grid.innerHTML = items.length
     ? items.map(card).join('')
     : '<div class="panel empty-state"><div class="empty-icon">⌕</div><h2>No matches</h2><p>Try changing the search or filters.</p></div>';
+  if (animate && !reducedMotion) {
+    grid.querySelectorAll('.card[data-id]').forEach((element, index) => {
+      const oldRect = oldRects.get(element.dataset.id);
+      const newRect = element.getBoundingClientRect();
+      if (oldRect) {
+        const dx = oldRect.left - newRect.left;
+        const dy = oldRect.top - newRect.top;
+        element.animate([
+          { transform: `translate(${dx}px, ${dy}px) scale(.98)`, opacity: .72 },
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 }
+        ], { duration: 360, delay: Math.min(index * 12, 120), easing: 'cubic-bezier(.2,.8,.2,1)' });
+      } else {
+        element.animate([
+          { transform: 'translateY(14px) scale(.96)', opacity: 0 },
+          { transform: 'translateY(0) scale(1)', opacity: 1 }
+        ], { duration: 300, delay: Math.min(index * 16, 140), easing: 'cubic-bezier(.2,.8,.2,1)' });
+      }
+    });
+  }
+}
+
+function showUnlockBurst(item) {
+  const burst = document.createElement('div');
+  burst.className = 'unlock-burst';
+  burst.innerHTML = `<div class="unlock-web" aria-hidden="true"></div><span>ACHIEVEMENT UPDATE</span><strong>POP UNLOCKED!</strong><small>${escapeHtml(item.name)} joined your vault</small>`;
+  document.body.appendChild(burst);
+  requestAnimationFrame(() => burst.classList.add('show'));
+  window.setTimeout(() => burst.classList.add('leave'), 1350);
+  window.setTimeout(() => burst.remove(), 1750);
+}
+
+function makeFlipStage(sourceCard, startRect, endRect, reverse = false) {
+  const clone = document.createElement('div');
+  clone.className = `card-flip-stage ${reverse ? 'is-reverse' : ''}`;
+  clone.style.left = `${startRect.left}px`;
+  clone.style.top = `${startRect.top}px`;
+  clone.style.width = `${startRect.width}px`;
+  clone.style.height = `${startRect.height}px`;
+  clone.innerHTML = `<div class="card-flip-inner"><div class="card-flip-front">${sourceCard.innerHTML}</div><div class="card-flip-back"><span class="flip-spider">SV</span><span>${reverse ? 'RETURNING TO VAULT' : 'OPENING VAULT'}</span></div></div>`;
+  document.body.appendChild(clone);
+  requestAnimationFrame(() => {
+    clone.style.setProperty('--flip-x', `${endRect.left - startRect.left}px`);
+    clone.style.setProperty('--flip-y', `${endRect.top - startRect.top}px`);
+    clone.style.setProperty('--flip-scale-x', `${endRect.width / startRect.width}`);
+    clone.style.setProperty('--flip-scale-y', `${endRect.height / startRect.height}`);
+    clone.classList.add('is-flipping');
+  });
+  return clone;
+}
+
+function closeDetail({ reverse = true } = {}) {
+  const dialog = $('#detailDialog');
+  if (!dialog.open) return;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const targetCard = state.openOrigin ? document.querySelector(`.card[data-id="${CSS.escape(state.openOrigin.id)}"]`) : null;
+  if (!reverse || reducedMotion || !targetCard) {
+    dialog.close();
+    state.openOrigin = null;
+    return;
+  }
+  const targetRect = targetCard.getBoundingClientRect();
+  const dialogRect = dialog.getBoundingClientRect();
+  const startRect = {
+    left: dialogRect.left + dialogRect.width / 2 - targetRect.width / 2,
+    top: dialogRect.top + Math.min(90, dialogRect.height * .16),
+    width: targetRect.width,
+    height: targetRect.height
+  };
+  dialog.close();
+  const clone = makeFlipStage(targetCard, startRect, targetRect, true);
+  window.setTimeout(() => clone.classList.add('is-fading'), 520);
+  window.setTimeout(() => clone.remove(), 720);
+  state.openOrigin = null;
 }
 
 function openDetail(id) {
@@ -307,10 +413,17 @@ function setupTypes() {
 }
 
 function navigate(view) {
-  $$('.view').forEach(element => element.classList.remove('active'));
-  $(`#${view}View`).classList.add('active');
+  const current = $('.view.active');
+  const next = $(`#${view}View`);
+  if (current === next) return;
+  current?.classList.add('view-leaving');
+  window.setTimeout(() => {
+    $$('.view').forEach(element => element.classList.remove('active', 'view-leaving', 'view-entering'));
+    next.classList.add('active', 'view-entering');
+    requestAnimationFrame(() => next.classList.remove('view-entering'));
+  }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 110);
   $$('.nav-btn').forEach(element => element.classList.toggle('active', element.dataset.nav === view));
-  if (view === 'catalogue') renderCatalogue();
+  if (view === 'catalogue') renderCatalogue({ animate: true });
   scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -322,35 +435,33 @@ document.addEventListener('click', event => {
   if (selectedCard && !selectedCard.classList.contains('card-opening')) {
     const id = selectedCard.dataset.id;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+    state.openOrigin = { id };
     if (reducedMotion) {
       openDetail(id);
     } else {
       selectedCard.classList.add('card-opening');
       const rect = selectedCard.getBoundingClientRect();
-      const clone = document.createElement('div');
-      clone.className = 'card-flip-stage';
-      clone.style.left = `${rect.left}px`;
-      clone.style.top = `${rect.top}px`;
-      clone.style.width = `${rect.width}px`;
-      clone.style.height = `${rect.height}px`;
-      clone.innerHTML = `<div class="card-flip-inner"><div class="card-flip-front">${selectedCard.innerHTML}</div><div class="card-flip-back"><span class="flip-spider">SV</span><span>OPENING VAULT</span></div></div>`;
-      document.body.appendChild(clone);
-      requestAnimationFrame(() => clone.classList.add('is-flipping'));
-
+      const targetWidth = Math.min(360, window.innerWidth * .78);
+      const targetHeight = Math.min(rect.height * 1.08, window.innerHeight * .58);
+      const targetRect = {
+        left: (window.innerWidth - targetWidth) / 2,
+        top: Math.max(74, (window.innerHeight - targetHeight) / 2),
+        width: targetWidth,
+        height: targetHeight
+      };
+      const clone = makeFlipStage(selectedCard, rect, targetRect);
       window.setTimeout(() => {
         openDetail(id);
         clone.classList.add('is-fading');
-      }, 430);
-
+      }, 500);
       window.setTimeout(() => {
         clone.remove();
         selectedCard.classList.remove('card-opening');
-      }, 650);
+      }, 760);
     }
   }
 
-  if (event.target.id === 'closeDialog') $('#detailDialog').close();
+  if (event.target.id === 'closeDialog') closeDetail();
 
   if (event.target.dataset.setStatus) {
     $$('[data-set-status]').forEach(button => button.classList.toggle('active', button === event.target));
@@ -358,6 +469,7 @@ document.addEventListener('click', event => {
 
   if (event.target.id === 'saveDetail') {
     const status = $('[data-set-status].active').dataset.setStatus;
+    const before = merged().find(item => item.id === state.selected);
     userData.items[state.selected] = {
       status,
       purchasePrice: $('#purchasePrice').value,
@@ -366,22 +478,56 @@ document.addEventListener('click', event => {
       updatedAt: new Date().toISOString()
     };
     save();
-    $('#detailDialog').close();
+    closeDetail({ reverse: false });
     renderAll();
-    toast('Vault updated');
+    const updated = merged().find(item => item.id === state.selected);
+    if (status === 'Owned' && before?.status !== 'Owned') showUnlockBurst(updated);
+    else toast('Vault updated');
   }
 
   if (event.target.matches('#statusFilters .chip')) {
     $$('#statusFilters .chip').forEach(button => button.classList.remove('active'));
     event.target.classList.add('active');
     state.filter = event.target.dataset.status;
-    renderCatalogue();
+    renderCatalogue({ animate: true });
   }
 });
 
-$('#searchInput').addEventListener('input', event => { state.query = event.target.value; renderCatalogue(); });
-$('#typeFilter').addEventListener('change', event => { state.type = event.target.value; renderCatalogue(); });
-$('#sortSelect').addEventListener('change', event => { state.sort = event.target.value; renderCatalogue(); });
+let searchTimer;
+$('#searchInput').addEventListener('input', event => {
+  state.query = event.target.value;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => renderCatalogue({ animate: true }), 90);
+});
+$('#typeFilter').addEventListener('change', event => { state.type = event.target.value; renderCatalogue({ animate: true }); });
+$('#sortSelect').addEventListener('change', event => { state.sort = event.target.value; renderCatalogue({ animate: true }); });
+
+const tiltEnabled = window.matchMedia('(hover:hover) and (pointer:fine)');
+document.addEventListener('pointermove', event => {
+  if (!tiltEnabled.matches) return;
+  const cardElement = event.target.closest('.card[data-id]');
+  if (!cardElement || cardElement.classList.contains('card-opening')) return;
+  const rect = cardElement.getBoundingClientRect();
+  const rx = ((event.clientY - rect.top) / rect.height - .5) * -7;
+  const ry = ((event.clientX - rect.left) / rect.width - .5) * 9;
+  cardElement.style.setProperty('--tilt-x', `${rx.toFixed(2)}deg`);
+  cardElement.style.setProperty('--tilt-y', `${ry.toFixed(2)}deg`);
+  cardElement.style.setProperty('--shine-x', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+  cardElement.style.setProperty('--shine-y', `${((event.clientY - rect.top) / rect.height) * 100}%`);
+  cardElement.classList.add('is-tilting');
+});
+document.addEventListener('pointerout', event => {
+  const cardElement = event.target.closest?.('.card[data-id]');
+  if (!cardElement || cardElement.contains(event.relatedTarget)) return;
+  cardElement.classList.remove('is-tilting');
+  cardElement.style.removeProperty('--tilt-x');
+  cardElement.style.removeProperty('--tilt-y');
+});
+
+$('#detailDialog').addEventListener('cancel', event => {
+  event.preventDefault();
+  closeDetail();
+});
 
 $('#exportBtn').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify({ app: 'SpideyVault', version: 2, exportedAt: new Date().toISOString(), data: userData }, null, 2)], { type: 'application/json' });

@@ -1,5 +1,3 @@
-# SpideyVault V3.3.1
+# SpideyVault V3.4 — Motion & Interaction Update
 
-Fixes the dashboard welcome-card Spider-Man artwork reference while retaining the V3.3 catalogue comic background and all V3.2 card-flip updates.
-
-Upload the root files over the existing repository files. The existing `images/hero-upside-down-spider-man.png` and `images/catalogue-comic-bg.png` files can remain in the GitHub `images` folder.
+Adds 3D hover tilt, animated catalogue reflow, status unlock celebration, animated dashboard counters/progress, navigation transitions, and reverse card-flip closing. Catalogue data and saved collection fields are unchanged.

@@ -517,3 +517,62 @@ body{
   .catalogue-hero-panel{margin:-4px -4px 20px;padding:14px 12px 4px}
   .catalogue-hero-panel::before{background-size:auto 100%;background-position:center center;opacity:.14}
 }
+
+/* V3.4 Motion polish */
+.card[data-id]{
+  transform-style:preserve-3d;
+  will-change:transform;
+  transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s ease,filter .18s ease;
+}
+.card[data-id].is-tilting{
+  transform:perspective(900px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg)) translateY(-5px) scale(1.018);
+  box-shadow:12px 15px 0 #020b19,0 18px 34px rgba(0,0,0,.28);
+  z-index:3;
+}
+.card[data-id].is-tilting .pop-image img{transform:translateZ(18px) scale(1.035)}
+.card[data-id].is-tilting .card-content{transform:translateZ(10px)}
+.card[data-id] .pop-image img,.card[data-id] .card-content{transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.card[data-id] .pop-image::before{
+  background-image:radial-gradient(circle at var(--shine-x,50%) var(--shine-y,50%),rgba(255,255,255,.14),transparent 38%),linear-gradient(rgba(84,197,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(84,197,255,.06) 1px,transparent 1px)!important;
+}
+
+.stat-enter{animation:stat-rise .45s cubic-bezier(.2,.85,.25,1) both;animation-delay:var(--stat-delay,0ms)}
+@keyframes stat-rise{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+.progress div{transition:width .7s steps(12,end)!important}
+
+.view.active.view-entering{animation:view-enter .28s cubic-bezier(.2,.8,.2,1)}
+.view.view-leaving{animation:view-leave .12s ease both}
+@keyframes view-enter{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@keyframes view-leave{to{opacity:0;transform:translateX(-8px)}}
+
+.card-flip-stage{transform:translate(0,0);transition:transform .55s cubic-bezier(.18,.78,.25,1),opacity .18s ease!important}
+.card-flip-stage.is-flipping{transform:translate(var(--flip-x,0),var(--flip-y,0)) scale(var(--flip-scale-x,1),var(--flip-scale-y,1))!important}
+.card-flip-stage.is-reverse .card-flip-inner{transform:rotateY(180deg)}
+.card-flip-stage.is-reverse.is-flipping .card-flip-inner{transform:rotateY(360deg) scale(1)}
+
+.unlock-burst{
+  position:fixed;inset:0;z-index:100;display:grid;place-content:center;text-align:center;pointer-events:none;
+  background:rgba(1,10,25,0);opacity:0;transition:opacity .2s ease,background .25s ease;
+}
+.unlock-burst.show{opacity:1;background:rgba(1,10,25,.56)}
+.unlock-burst.leave{opacity:0}
+.unlock-burst::before,.unlock-burst::after{
+  content:"";position:absolute;left:50%;top:50%;width:22px;height:22px;background:#fff;border:4px solid #5ed5ff;
+  box-shadow:0 -92px 0 #ed1d32,68px -68px 0 #ffd54a,92px 0 0 #5ed5ff,68px 68px 0 #ed1d32,0 92px 0 #ffd54a,-68px 68px 0 #5ed5ff,-92px 0 0 #ed1d32,-68px -68px 0 #ffd54a;
+  transform:translate(-50%,-50%) scale(.15) rotate(0);opacity:0;
+}
+.unlock-burst.show::before{animation:burst-pixels .78s steps(8,end) forwards}
+.unlock-burst.show::after{animation:burst-pixels .9s .08s steps(8,end) forwards;transform:translate(-50%,-50%) scale(.15) rotate(22.5deg)}
+@keyframes burst-pixels{0%{opacity:0;transform:translate(-50%,-50%) scale(.15) rotate(0)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7) rotate(45deg)}}
+.unlock-burst>span,.unlock-burst>strong,.unlock-burst>small{position:relative;z-index:2;display:block;background:#061b3c;border-left:4px solid #5ed5ff;border-right:4px solid #ed1d32;padding-inline:24px}
+.unlock-burst>span{padding-top:18px;color:#ffd54a;font-family:var(--font-display);font-size:9px;letter-spacing:.08em}
+.unlock-burst>strong{padding-top:7px;color:#fff;font-family:var(--font-display);font-size:clamp(19px,5vw,34px);text-shadow:4px 4px 0 #001126}
+.unlock-burst>small{padding-top:10px;padding-bottom:20px;color:#c8e8ff;font-size:13px}
+.unlock-web{position:absolute;left:50%;top:50%;width:min(78vw,520px);aspect-ratio:1;border:3px solid rgba(99,214,255,.5);border-radius:50%;transform:translate(-50%,-50%) scale(.35);opacity:0;background:repeating-conic-gradient(from 0deg,rgba(99,214,255,.55) 0 1deg,transparent 1deg 30deg);clip-path:circle(50%)}
+.unlock-burst.show .unlock-web{animation:web-pop .75s cubic-bezier(.15,.85,.2,1) forwards}
+@keyframes web-pop{to{transform:translate(-50%,-50%) scale(1);opacity:.52}}
+
+@media(prefers-reduced-motion:reduce){
+  .stat-enter,.view.active.view-entering,.view.view-leaving,.unlock-burst::before,.unlock-burst::after,.unlock-web{animation:none!important}
+  .card[data-id].is-tilting{transform:none!important}
+}

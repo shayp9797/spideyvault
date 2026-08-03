@@ -1,4 +1,4 @@
-const CACHE='spideyvault-v3.3.1';
+const CACHE='spideyvault-v3.4-motion';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./catalogue.js','./manifest.webmanifest','./icon.svg',
   './images/ins-399-negative-suit.png',
   './images/ins-397-miles.png',
