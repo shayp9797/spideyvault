@@ -320,13 +320,34 @@ document.addEventListener('click', event => {
 
   const selectedCard = event.target.closest('.card');
   if (selectedCard && !selectedCard.classList.contains('card-opening')) {
-    selectedCard.classList.add('card-opening');
     const id = selectedCard.dataset.id;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.setTimeout(() => {
-      selectedCard.classList.remove('card-opening');
+
+    if (reducedMotion) {
       openDetail(id);
-    }, reducedMotion ? 0 : 270);
+    } else {
+      selectedCard.classList.add('card-opening');
+      const rect = selectedCard.getBoundingClientRect();
+      const clone = document.createElement('div');
+      clone.className = 'card-flip-stage';
+      clone.style.left = `${rect.left}px`;
+      clone.style.top = `${rect.top}px`;
+      clone.style.width = `${rect.width}px`;
+      clone.style.height = `${rect.height}px`;
+      clone.innerHTML = `<div class="card-flip-inner"><div class="card-flip-front">${selectedCard.innerHTML}</div><div class="card-flip-back"><span class="flip-spider">SV</span><span>OPENING VAULT</span></div></div>`;
+      document.body.appendChild(clone);
+      requestAnimationFrame(() => clone.classList.add('is-flipping'));
+
+      window.setTimeout(() => {
+        openDetail(id);
+        clone.classList.add('is-fading');
+      }, 430);
+
+      window.setTimeout(() => {
+        clone.remove();
+        selectedCard.classList.remove('card-opening');
+      }, 650);
+    }
   }
 
   if (event.target.id === 'closeDialog') $('#detailDialog').close();

@@ -371,3 +371,98 @@ body{
   .card-grid{gap:18px}
   .card-content{padding:15px 13px 16px}
 }
+
+/* V3.2 welcome art: user-provided hanging Spider-Man */
+.hero-art{
+  right:10px;
+  top:-2px;
+  width:174px;
+  height:206px;
+  opacity:1;
+  overflow:hidden;
+  display:flex;
+  justify-content:flex-end;
+  align-items:flex-start;
+}
+.hero-art img{
+  display:block;
+  width:168px;
+  height:205px;
+  object-fit:contain;
+  object-position:top right;
+  filter:drop-shadow(5px 7px 0 rgba(1,10,28,.58));
+}
+.hero-web-line,.pixel-spidey,.pixel-web{display:none!important}
+
+/* V3.2 collectible-card flip transition */
+.card.card-opening{
+  opacity:.22;
+  pointer-events:none;
+  animation:none;
+}
+.card-flip-stage{
+  position:fixed;
+  z-index:9998;
+  perspective:1200px;
+  pointer-events:none;
+  transform-origin:center;
+  transition:left .42s cubic-bezier(.2,.8,.25,1),top .42s cubic-bezier(.2,.8,.25,1),width .42s cubic-bezier(.2,.8,.25,1),height .42s cubic-bezier(.2,.8,.25,1),transform .42s cubic-bezier(.2,.8,.25,1),opacity .18s ease;
+}
+.card-flip-inner{
+  position:relative;
+  width:100%;height:100%;
+  transform-style:preserve-3d;
+  transition:transform .52s cubic-bezier(.18,.78,.22,1);
+}
+.card-flip-stage.is-flipping{
+  left:calc(50vw - min(220px,42vw));
+  top:calc(50vh - min(270px,39vh));
+  width:min(440px,84vw);
+  height:min(540px,78vh);
+  transform:translateZ(0) rotate(-1deg);
+}
+.card-flip-stage.is-flipping .card-flip-inner{transform:rotateY(180deg) scale(1.015)}
+.card-flip-stage.is-fading{opacity:0}
+.card-flip-front,.card-flip-back{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  overflow:hidden;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));
+  border:2px solid var(--card-line-hover);
+  box-shadow:10px 12px 0 rgba(1,8,22,.75);
+  background:var(--card);
+}
+.card-flip-front{transform:rotateY(0deg)}
+.card-flip-front>.pop-image.card{height:58%;aspect-ratio:auto}
+.card-flip-front>.card-content{height:42%;box-sizing:border-box}
+.card-flip-back{
+  transform:rotateY(180deg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  background:
+    linear-gradient(rgba(91,202,255,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,202,255,.08) 1px,transparent 1px),
+    radial-gradient(circle at center,rgba(233,29,50,.32),transparent 54%),
+    #071a3a;
+  background-size:18px 18px,18px 18px,auto,auto;
+  color:#fff;
+  font-family:var(--font-display);
+  font-size:13px;
+  letter-spacing:1px;
+  text-align:center;
+}
+.card-flip-back::before,.card-flip-back::after{
+  content:"";position:absolute;inset:14px;border:2px solid rgba(91,202,255,.55);pointer-events:none;
+}
+.card-flip-back::after{inset:24px;border-color:rgba(233,29,50,.55)}
+.flip-spider{
+  display:grid;place-items:center;width:82px;height:82px;
+  background:var(--red);border:4px solid #fff;border-radius:50%;
+  box-shadow:0 0 0 5px #071a3a,0 0 0 8px var(--blue);
+  font-size:24px;color:#fff;text-shadow:3px 3px 0 #071a3a;
+}
+@media(max-width:600px){
+  .hero{padding-right:130px}
+  .hero-art{right:-8px;width:145px;height:190px}
+  .hero-art img{width:142px;height:188px}
+}
+@media(prefers-reduced-motion:reduce){.card-flip-stage{display:none!important}}

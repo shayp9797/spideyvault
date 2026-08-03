@@ -9,3 +9,8 @@ Visual refinement of the V3 retro redesign.
 - pixel Spider-Man/web welcome artwork
 - card swoosh-and-expand opening animation
 - catalogue data and personal collection data unchanged
+
+
+## V3.2
+- Replaced dashboard corner art with the supplied upside-down Spider-Man asset.
+- Added a real collectible-card 3D flip transition before opening Pop details.
