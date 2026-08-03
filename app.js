@@ -328,12 +328,37 @@ function renderCatalogue(options = {}) {
 
 function showUnlockBurst(item) {
   const burst = document.createElement('div');
+  const originalUrl = imageUrl(item);
+  const resolvedUrl = displayImageUrl(originalUrl);
+  const alt = escapeHtml(`${item.name} ${item.variant || ''}`.trim());
+  const number = escapeHtml(item.number || 'SV');
+  const image = resolvedUrl
+    ? `<img class="unlock-figure" src="${escapeHtml(resolvedUrl)}" alt="${alt}" referrerpolicy="no-referrer">`
+    : `<div class="unlock-fallback"><span>${number}</span><strong>SV</strong></div>`;
+
   burst.className = 'unlock-burst';
-  burst.innerHTML = `<div class="unlock-web" aria-hidden="true"></div><span>ACHIEVEMENT UPDATE</span><strong>POP UNLOCKED!</strong><small>${escapeHtml(item.name)} joined your vault</small>`;
+  burst.setAttribute('role', 'status');
+  burst.setAttribute('aria-live', 'polite');
+  burst.innerHTML = `
+    <div class="unlock-comic-burst" aria-hidden="true"></div>
+    <div class="unlock-particles" aria-hidden="true"></div>
+    <div class="unlock-stage">
+      <div class="unlock-card">
+        <div class="unlock-scan" aria-hidden="true"></div>
+        ${image}
+        <span class="unlock-number">#${number}</span>
+      </div>
+      <div class="unlock-copy">
+        <span>VAULT SCAN COMPLETE</span>
+        <strong>POP UNLOCKED!</strong>
+        <small>${escapeHtml(item.name)} joined your vault</small>
+        <em>OWNED</em>
+      </div>
+    </div>`;
   document.body.appendChild(burst);
   requestAnimationFrame(() => burst.classList.add('show'));
-  window.setTimeout(() => burst.classList.add('leave'), 1350);
-  window.setTimeout(() => burst.remove(), 1750);
+  window.setTimeout(() => burst.classList.add('leave'), 1750);
+  window.setTimeout(() => burst.remove(), 2000);
 }
 
 function makeFlipStage(sourceCard, startRect, endRect, reverse = false) {
