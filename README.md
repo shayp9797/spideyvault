@@ -1,6 +1,10 @@
-# SpideyVault V2.4 — MCU researched remap
+# SpideyVault V2.5 — Spider-Verse Image Mapping
 
-- Re-audited MCU-labelled catalogue records against Funko product pages and box numbers.
-- Replaced verified entries with official transparent Funko renders where available.
-- Remaining verified legacy images use a revised edge-connected background cleanup with halo reduction and automatic crop.
-- Keeps the catalogue corrections from the previous build.
+Mapped all catalogue entries from **Spider-Man: Into the Spider-Verse** and **Spider-Man: Across the Spider-Verse**.
+
+Image priority used:
+1. Official Funko transparent product renders.
+2. Cleaned official product images stored locally where the source had a white canvas.
+3. Clean catalogue/box fallback only where a suitable transparent official render was unavailable.
+
+The local `images` folder includes cleaned assets for Miles Morales #402, Miles Morales #403 and Spider-Gwen #405. Upload those files into the existing GitHub `images` folder.
