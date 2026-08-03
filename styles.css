@@ -466,3 +466,54 @@ body{
   .hero-art img{width:142px;height:188px}
 }
 @media(prefers-reduced-motion:reduce){.card-flip-stage{display:none!important}}
+
+/* V3.3 catalogue comic-collage banner */
+.catalogue-hero-panel{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  margin:-4px -4px 24px;
+  padding:18px 18px 6px;
+  border-top:3px solid rgba(91,202,255,.68);
+  border-bottom:3px solid rgba(91,202,255,.48);
+  background:#0a2b58;
+  box-shadow:inset 0 -8px 22px rgba(1,9,25,.36);
+}
+.catalogue-hero-panel::before{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  background-image:url('./images/catalogue-comic-bg.png');
+  background-repeat:no-repeat;
+  background-position:center 48%;
+  background-size:cover;
+  filter:grayscale(1) contrast(1.08) brightness(.92) sepia(.15) hue-rotate(165deg) saturate(1.5);
+  opacity:.17;
+  transform:scale(1.035);
+}
+.catalogue-hero-panel::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:
+    linear-gradient(180deg,rgba(5,29,66,.48),rgba(5,26,58,.72)),
+    radial-gradient(circle at 22% 28%,rgba(42,167,255,.13),transparent 42%);
+  pointer-events:none;
+}
+.catalogue-hero-panel .page-title{margin:8px 0 18px}
+.catalogue-hero-panel .search-wrap,
+.catalogue-hero-panel .chip,
+.catalogue-hero-panel select{
+  backdrop-filter:blur(2px);
+}
+.catalogue-hero-panel .search-wrap{background:rgba(4,22,50,.82)}
+.catalogue-hero-panel .chip{background:rgba(8,42,86,.88)}
+.catalogue-hero-panel .chip.active{background:var(--red)}
+.catalogue-hero-panel select{background:rgba(5,29,65,.9)}
+.catalogue-hero-panel .select-row{margin-bottom:10px}
+@media(max-width:600px){
+  .catalogue-hero-panel{margin:-4px -4px 20px;padding:14px 12px 4px}
+  .catalogue-hero-panel::before{background-size:auto 100%;background-position:center center;opacity:.14}
+}

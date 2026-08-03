@@ -1,16 +1,12 @@
-# SpideyVault V3.1 — Refined Retro Cards
+# SpideyVault V3.3 — Catalogue Comic Background
 
-Visual refinement of the V3 retro redesign.
+Visual-only update based on V3.2.
 
-- calmer navy catalogue background
-- simplified neutral card borders
-- unified dashboard stat surfaces
-- more card spacing and cleaner metadata panels
-- pixel Spider-Man/web welcome artwork
-- card swoosh-and-expand opening animation
-- catalogue data and personal collection data unchanged
+## Changes
+- Rotated the supplied Spider-Man comic collage into a landscape background.
+- Added it only behind the catalogue title, search, status filters and dropdown filters.
+- Applied a subtle blue monochrome treatment and low opacity for a silhouette-style effect.
+- Cropped the artwork at the catalogue header and filter-panel borders.
+- Catalogue cards and collection data are unchanged.
 
-
-## V3.2
-- Replaced dashboard corner art with the supplied upside-down Spider-Man asset.
-- Added a real collectible-card 3D flip transition before opening Pop details.
+Upload all root files over the existing GitHub files, then upload `catalogue-comic-bg.png` into the repository `images` folder.
