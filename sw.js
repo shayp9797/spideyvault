@@ -1,4 +1,4 @@
-const CACHE='spideyvault-v2.9.5';
+const CACHE='spideyvault-v2.9.6';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./catalogue.js','./manifest.webmanifest','./icon.svg',
   './images/ins-399-negative-suit.png',
   './images/ins-397-miles.png',
