@@ -17,3 +17,8 @@ Correction pass for the Insomniac/Gamerverse catalogue.
 - Corrected image paths for Pop! Games #334, Miles #397, Negative Suit #399 and Spider-Punk #503.
 - Kept Holiday Spider-Man #397 as a separate valid Pop! Marvel entry and mapped it independently.
 - Labelled Insomniac entries as Spider-Man 1 or Spider-Man 2 in the catalogue line/description.
+
+
+## V2.9.3 hotfix
+- Fixed an extra closing bracket in `catalogue.js` that prevented the catalogue JavaScript module from loading.
+- Updated the service-worker cache version.
