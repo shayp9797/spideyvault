@@ -1,7 +1,7 @@
 import { catalogue } from './catalogue.js';
 
 const KEY = 'spideyvault-v1';
-const state = { filter: 'All', type: 'All', query: '', sort: 'name', selected: null, openOrigin: null, lastStats: null };
+const state = { filter: 'All', type: 'All', query: '', sort: 'name', world: 'All', selected: null, openOrigin: null, lastStats: null };
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
@@ -20,7 +20,12 @@ const personal = item => userData.items[item.id] || {
   purchasePrice: '',
   notes: '',
   customImageUrl: '',
-  updatedAt: ''
+  updatedAt: '',
+  grail: false,
+  signed: false,
+  signedBy: '',
+  authentication: '',
+  certificateNumber: ''
 };
 
 const save = () => {
@@ -194,6 +199,80 @@ function imageMarkup(item, size = 'card') {
   return `<div class="pop-image ${size}"><div class="image-fallback"><span>${number}</span><strong>SPIDEY<br>VAULT</strong></div></div>`;
 }
 
+const WORLDS = [
+  { id: 'MCU', label: 'MCU', icon: '◉', matcher: item => /Homecoming|Infinity War|Endgame|Far From Home|No Way Home|NWH Final Battle|Brand New Day/i.test(item.line || '') },
+  { id: 'Spider-Verse', label: 'Spider-Verse', icon: '✦', matcher: item => /Spider-Verse/i.test(item.line || '') },
+  { id: 'Insomniac', label: 'Insomniac', icon: '⌁', matcher: item => /Gamerverse|Marvel.?s Spider-Man|Spider-Man 1|Spider-Man 2|Miles Morales/i.test(item.line || '') },
+  { id: 'Comic Covers', label: 'Comic Covers', icon: '▤', matcher: item => /Comic Cover/i.test(`${item.type || ''} ${item.line || ''}`) },
+  { id: 'Spider-Gwen', label: 'Spider-Gwen', icon: '◇', matcher: item => /Gwen|Ghost-Spider|Gwenom/i.test(`${item.character || ''} ${item.name || ''}`) },
+  { id: 'Spider-Man 2099', label: 'Spider-Man 2099', icon: '⌬', matcher: item => /2099/i.test(`${item.character || ''} ${item.name || ''} ${item.variant || ''}`) }
+];
+
+function worldFor(id) {
+  return WORLDS.find(world => world.id === id);
+}
+
+function matchesWorld(item, worldId) {
+  if (!worldId || worldId === 'All') return true;
+  return worldFor(worldId)?.matcher(item) ?? true;
+}
+
+function renderWorldFilter() {
+  const bar = $('#activeWorldFilter');
+  if (state.world === 'All') {
+    bar.classList.add('hidden');
+    bar.innerHTML = '';
+    return;
+  }
+  bar.classList.remove('hidden');
+  bar.innerHTML = `<span>WORLD FILTER: ${escapeHtml(state.world)}</span><button type="button" data-clear-world>Clear ×</button>`;
+}
+
+function dailyOwnedPick() {
+  const owned = merged().filter(item => item.status === 'Owned');
+  if (!owned.length) return null;
+  const day = new Date().toISOString().slice(0, 10);
+  let hash = 0;
+  for (const char of day) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
+  return owned[Math.abs(hash) % owned.length];
+}
+
+function renderDailySpotlight() {
+  const item = dailyOwnedPick();
+  const root = $('#dailySpotlight');
+  if (!item) {
+    root.innerHTML = `<div class="spotlight-empty"><span class="empty-pixel-icon">?</span><div><strong>NO VAULT PICK YET</strong><p>Mark your first Pop as Owned and tomorrow's spotlight will have something to show.</p></div></div>`;
+    return;
+  }
+  root.innerHTML = `<button class="spotlight-card" data-open-id="${escapeHtml(item.id)}">
+    <div class="spotlight-art">${imageMarkup(item, 'spotlight-image')}</div>
+    <div class="spotlight-copy">
+      <span class="eyebrow">TODAY'S VAULT PICK</span>
+      <h3>${escapeHtml(item.name)}</h3>
+      <p>${escapeHtml(item.number || 'No number')} · ${escapeHtml(item.line)}</p>
+      <div class="spotlight-flags">${item.grail ? '<span>♛ GRAIL</span>' : ''}${item.signed ? '<span>✎ SIGNED</span>' : ''}</div>
+      <em>OPEN CARD →</em>
+    </div>
+  </button>`;
+}
+
+function renderCollectionWorlds() {
+  const all = merged();
+  $('#collectionWorlds').innerHTML = WORLDS.map(world => {
+    const items = all.filter(world.matcher);
+    const owned = items.filter(item => item.status === 'Owned').length;
+    const percent = items.length ? Math.round((owned / items.length) * 100) : 0;
+    const remaining = Math.max(0, items.length - owned);
+    return `<button class="world-card" data-world="${escapeHtml(world.id)}">
+      <span class="world-icon">${world.icon}</span>
+      <strong>${escapeHtml(world.label)}</strong>
+      <small>${owned} / ${items.length} owned</small>
+      <div class="world-progress"><i style="width:${percent}%"></i></div>
+      <em>${remaining ? `${remaining} remaining` : 'WORLD COMPLETE'}</em>
+    </button>`;
+  }).join('');
+}
+
 function stats() {
   const all = merged();
   const owned = all.filter(item => item.status === 'Owned');
@@ -249,7 +328,9 @@ function renderStats() {
 }
 
 function card(item) {
+  const markers = `${item.grail ? '<span class="card-marker grail" title="Grail">♛</span>' : ''}${item.signed ? '<span class="card-marker signed" title="Signed">✎</span>' : ''}`;
   return `<button class="card" data-id="${item.id}">
+    <span class="card-markers">${markers}</span>
     ${imageMarkup(item)}
     <div class="card-content">
       <div class="card-kicker"><span class="num">${escapeHtml(item.number || 'NO NUMBER')}</span><span class="type-mini">${escapeHtml(item.type)}</span></div>
@@ -267,13 +348,14 @@ function renderRecent() {
     .slice(0, 8);
   $('#recentGrid').innerHTML = updated.length
     ? updated.map(card).join('')
-    : '<div class="panel empty-state"><div class="empty-icon">🕸</div><h2>Your vault is ready</h2><p>Open the catalogue and mark your first Pop as Owned or Incoming.</p></div>';
+    : '<div class="panel empty-state"><div class="empty-icon">◌</div><h2>THE VAULT IS QUIET</h2><p>Open the catalogue and log your first collection update.</p></div>';
 }
 
 function filtered() {
   let items = merged();
   if (state.filter !== 'All') items = items.filter(item => item.status === state.filter);
   if (state.type !== 'All') items = items.filter(item => item.type === state.type);
+  if (state.world !== 'All') items = items.filter(item => matchesWorld(item, state.world));
   if (state.query) {
     const query = state.query.toLowerCase();
     items = items.filter(item => [item.name, item.character, item.number, item.line, item.variant, item.exclusive]
@@ -302,9 +384,10 @@ function renderCatalogue(options = {}) {
   }
   const items = filtered();
   $('#resultCount').textContent = `${items.length} items`;
+  renderWorldFilter();
   grid.innerHTML = items.length
     ? items.map(card).join('')
-    : '<div class="panel empty-state"><div class="empty-icon">⌕</div><h2>No matches</h2><p>Try changing the search or filters.</p></div>';
+    : '<div class="panel empty-state"><div class="empty-icon">⌕</div><h2>SPIDER-SENSE FOUND NOTHING</h2><p>Try another search, world or filter combination.</p></div>';
   if (animate && !reducedMotion) {
     grid.querySelectorAll('.card[data-id]').forEach((element, index) => {
       const oldRect = oldRects.get(element.dataset.id);
@@ -423,6 +506,15 @@ function openDetail(id) {
     </dl>
     <p class="eyebrow">COLLECTION STATUS</p>
     <div class="status-switch">${['Need', 'Owned', 'Incoming'].map(status => `<button data-set-status="${status}" class="${item.status === status ? 'active' : ''}">${status}</button>`).join('')}</div>
+    <div class="collector-flags">
+      <label><input id="grailToggle" type="checkbox" ${item.grail ? 'checked' : ''}><span>♛ Mark as Grail</span></label>
+      <label><input id="signedToggle" type="checkbox" ${item.signed ? 'checked' : ''}><span>✎ Signed copy</span></label>
+    </div>
+    <div id="signedFields" class="signed-fields ${item.signed ? '' : 'hidden'}">
+      <label class="field">Signed by<input id="signedBy" type="text" value="${escapeHtml(item.signedBy || '')}" placeholder="Actor, creator or voice artist"></label>
+      <label class="field">Authentication<input id="authentication" type="text" value="${escapeHtml(item.authentication || '')}" placeholder="Beckett, JSA, PSA…"></label>
+      <label class="field">Certificate number<input id="certificateNumber" type="text" value="${escapeHtml(item.certificateNumber || '')}" placeholder="Optional"></label>
+    </div>
     <label class="field">Purchase price<input id="purchasePrice" type="number" inputmode="decimal" min="0" step="0.01" value="${escapeHtml(item.purchasePrice || '')}" placeholder="0.00"></label>
     <label class="field">Custom image URL <span class="field-hint">Optional</span><input id="customImageUrl" type="url" value="${escapeHtml(item.customImageUrl || '')}" placeholder="https://…"></label>
     <p class="helper-text">Use a direct image address. Leave blank to use the SpideyVault placeholder.</p>
@@ -455,6 +547,25 @@ function navigate(view) {
 document.addEventListener('click', event => {
   const navigation = event.target.closest('[data-nav]');
   if (navigation) navigate(navigation.dataset.nav);
+
+  const spotlight = event.target.closest('[data-open-id]');
+  if (spotlight) openDetail(spotlight.dataset.openId);
+
+  const worldCard = event.target.closest('[data-world]');
+  if (worldCard) {
+    state.world = worldCard.dataset.world;
+    navigate('catalogue');
+    renderCatalogue({ animate: true });
+  }
+
+  if (event.target.closest('[data-clear-world]')) {
+    state.world = 'All';
+    renderCatalogue({ animate: true });
+  }
+
+  if (event.target.id === 'signedToggle') {
+    $('#signedFields').classList.toggle('hidden', !event.target.checked);
+  }
 
   const selectedCard = event.target.closest('.card');
   if (selectedCard && !selectedCard.classList.contains('card-opening')) {
@@ -495,11 +606,18 @@ document.addEventListener('click', event => {
   if (event.target.id === 'saveDetail') {
     const status = $('[data-set-status].active').dataset.setStatus;
     const before = merged().find(item => item.id === state.selected);
+    const currentPersonal = personal(before);
     userData.items[state.selected] = {
+      ...currentPersonal,
       status,
       purchasePrice: $('#purchasePrice').value,
       customImageUrl: $('#customImageUrl').value.trim(),
       notes: $('#personalNotes').value,
+      grail: $('#grailToggle').checked,
+      signed: $('#signedToggle').checked,
+      signedBy: $('#signedBy')?.value.trim() || '',
+      authentication: $('#authentication')?.value.trim() || '',
+      certificateNumber: $('#certificateNumber')?.value.trim() || '',
       updatedAt: new Date().toISOString()
     };
     save();
@@ -611,9 +729,12 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
 
 function renderAll() {
   renderStats();
+  renderDailySpotlight();
+  renderCollectionWorlds();
   renderRecent();
   renderCatalogue();
 }
 
 setupTypes();
 renderAll();
+window.setTimeout(() => document.body.classList.add('app-ready'), 1050);

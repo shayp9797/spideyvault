@@ -1,12 +1,13 @@
-# SpideyVault V3.5 — Comic Burst + Vault Scan
+# SpideyVault V3.6 — Collector Features
 
-This update upgrades the Owned-status celebration to a two-second sequence:
+Adds the first collector-personalisation and dashboard expansion pass:
 
-- the page dims to spotlight the unlock
-- the Pop appears in a dedicated vault card
-- a cyan scan line verifies the card
-- a red/yellow comic burst expands behind it
-- pixel particles fire outward
-- the Pop name and an OWNED stamp complete the sequence
+- Grail toggle with crown marker on catalogue cards
+- Signed-copy toggle and manual signer/authentication/certificate fields
+- Daily randomized spotlight chosen from Owned Pops and fixed for the current date
+- Six clickable Collection Worlds with completion progress and catalogue filtering
+- Themed empty states
+- Animated first-load vault opening using CSS and web-pull effects
+- Keeps all existing V3.5 motion, unlock celebration, catalogue data and local-storage compatibility
 
-The animation respects reduced-motion preferences. Catalogue data, image mappings, statuses, purchase details and notes are unchanged.
+Signed-copy photo uploads remain on the later roadmap because they require IndexedDB and backup-size handling.

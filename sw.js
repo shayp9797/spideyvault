@@ -1,5 +1,7 @@
-const CACHE='spideyvault-v3.5-unlock-combo';
+const CACHE='spideyvault-v3.6-collector-features';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./catalogue.js','./manifest.webmanifest','./icon.svg',
+  './images/catalogue-comic-bg.png',
+  './images/hero-upside-down-spider-man.png',
   './images/ins-399-negative-suit.png',
   './images/ins-397-miles.png',
   './images/ins-334-advanced-suit.png','./images/spider-gwen-405.jpeg','./images/spider-gwen-153-unhooded.jpeg'];

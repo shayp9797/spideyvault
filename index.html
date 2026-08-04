@@ -11,6 +11,16 @@
   <title>SpideyVault</title>
 </head>
 <body>
+  <div id="loadingScreen" class="loading-screen" aria-label="Opening SpideyVault">
+    <div class="loading-web left" aria-hidden="true"></div>
+    <div class="loading-web right" aria-hidden="true"></div>
+    <div class="vault-loader" aria-hidden="true">
+      <div class="vault-door left"><span></span></div>
+      <div class="vault-door right"><span></span></div>
+      <div class="vault-lock">SV</div>
+    </div>
+    <strong>OPENING THE VAULT...</strong>
+  </div>
   <header class="topbar">
     <div class="brand"><span class="brand-mark">SV</span><div><strong>SpideyVault</strong><small>Spider-Man Funko Collection</small></div></div>
     <button id="installBtn" class="ghost hidden">Install</button>
@@ -25,6 +35,10 @@
         <div class="hero-art" aria-hidden="true"><img src="images/hero-upside-down-spider-man.png" alt="" /></div>
       </div>
       <div id="stats" class="stats"></div>
+      <div class="section-head"><h2>Today's vault pick</h2><span class="section-tag">DAILY</span></div>
+      <div id="dailySpotlight" class="daily-spotlight"></div>
+      <div class="section-head"><h2>Collection worlds</h2><span class="section-tag">EXPLORE</span></div>
+      <div id="collectionWorlds" class="collection-worlds"></div>
       <div class="section-head"><h2>Collection progress</h2><span id="progressLabel"></span></div>
       <div class="progress"><div id="progressBar"></div></div>
       <div class="section-head"><h2>Recently updated</h2><button data-nav="catalogue" class="text-btn">View all</button></div>
@@ -35,6 +49,7 @@
       <div class="catalogue-hero-panel">
         <div class="page-title"><div><p class="eyebrow">MASTER CATALOGUE</p><h1>Choose your next unlock</h1></div><span id="resultCount" class="pill"></span></div>
         <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Search name, number, line or sticker" /></div>
+        <div id="activeWorldFilter" class="active-world-filter hidden"></div>
         <div class="filter-row" id="statusFilters">
           <button class="chip active" data-status="All">All</button><button class="chip" data-status="Owned">Owned</button><button class="chip" data-status="Need">Needed</button><button class="chip" data-status="Incoming">Incoming</button>
         </div>
