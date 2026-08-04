@@ -217,6 +217,51 @@ function matchesWorld(item, worldId) {
   return worldFor(worldId)?.matcher(item) ?? true;
 }
 
+
+function enterWorld(worldCard, worldId) {
+  const world = worldFor(worldId);
+  if (!world) return;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    state.world = worldId;
+    navigate('catalogue');
+    renderCatalogue({ animate: true });
+    return;
+  }
+
+  const rect = worldCard.getBoundingClientRect();
+  const overlay = document.createElement('div');
+  overlay.className = 'world-transition';
+  overlay.setAttribute('aria-hidden', 'true');
+  overlay.style.setProperty('--world-x', `${rect.left}px`);
+  overlay.style.setProperty('--world-y', `${rect.top}px`);
+  overlay.style.setProperty('--world-w', `${rect.width}px`);
+  overlay.style.setProperty('--world-h', `${rect.height}px`);
+  overlay.style.setProperty('--world-image', `url("${world.image}")`);
+  overlay.style.setProperty('--world-position', world.position || 'center');
+  overlay.innerHTML = `<div class="world-transition-card"><span class="world-transition-art"></span><div class="world-transition-shade"></div><div class="world-transition-copy"><small>ENTERING WORLD</small><strong>${escapeHtml(world.label)}</strong><span>LOADING COLLECTION...</span></div><div class="world-transition-scan"></div></div>`;
+  document.body.appendChild(overlay);
+  document.body.classList.add('world-transitioning');
+  worldCard.classList.add('world-card-entering');
+
+  requestAnimationFrame(() => overlay.classList.add('is-active'));
+
+  window.setTimeout(() => {
+    state.world = worldId;
+    navigate('catalogue');
+    renderCatalogue({ animate: true });
+    overlay.classList.add('is-revealing');
+  }, 520);
+
+  window.setTimeout(() => {
+    overlay.classList.add('is-exiting');
+    document.body.classList.remove('world-transitioning');
+    worldCard.classList.remove('world-card-entering');
+  }, 760);
+
+  window.setTimeout(() => overlay.remove(), 980);
+}
+
 function renderWorldFilter() {
   const bar = $('#activeWorldFilter');
   if (state.world === 'All') {
@@ -554,10 +599,8 @@ document.addEventListener('click', event => {
   if (spotlight) openDetail(spotlight.dataset.openId);
 
   const worldCard = event.target.closest('[data-world]');
-  if (worldCard) {
-    state.world = worldCard.dataset.world;
-    navigate('catalogue');
-    renderCatalogue({ animate: true });
+  if (worldCard && !document.body.classList.contains('world-transitioning')) {
+    enterWorld(worldCard, worldCard.dataset.world);
   }
 
   if (event.target.closest('[data-clear-world]')) {

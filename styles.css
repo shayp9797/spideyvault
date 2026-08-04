@@ -645,3 +645,29 @@ body{
 @media(min-width:760px){.collection-worlds{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){.spotlight-card{grid-template-columns:42% 1fr;min-height:180px}.pop-image.spotlight-image{min-height:180px}.spotlight-copy{padding:17px 13px}.spotlight-copy h3{font-size:12px}.collection-worlds{grid-template-columns:1fr}.collector-flags{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.loading-screen,.vault-door,.vault-lock,.loading-web,.spotlight-card::after{animation:none!important;transition:none!important}.app-ready .loading-screen{display:none}}
+
+/* World zoom transition */
+body.world-transitioning{overflow:hidden}
+.world-card-entering{z-index:30;transform:translate(-2px,-2px) scale(1.025)!important;border-color:#8be8ff!important;box-shadow:0 0 0 2px rgba(99,214,255,.25),7px 7px 0 #020b19!important}
+.world-transition{position:fixed;z-index:9998;inset:0;pointer-events:none;perspective:1200px;overflow:hidden}
+.world-transition::before{content:"";position:absolute;inset:0;background:rgba(2,9,24,0);backdrop-filter:blur(0);transition:background .24s ease,backdrop-filter .24s ease}
+.world-transition-card{position:absolute;left:var(--world-x);top:var(--world-y);width:var(--world-w);height:var(--world-h);overflow:hidden;background:#071d3c;border:2px solid #63d6ff;box-shadow:6px 6px 0 #020b19;transform-origin:center;transition:left .52s cubic-bezier(.22,.8,.2,1),top .52s cubic-bezier(.22,.8,.2,1),width .52s cubic-bezier(.22,.8,.2,1),height .52s cubic-bezier(.22,.8,.2,1),border-radius .52s ease,box-shadow .3s ease,opacity .22s ease,filter .22s ease}
+.world-transition-art{position:absolute;inset:-4%;background-image:var(--world-image);background-size:cover;background-position:var(--world-position);filter:saturate(.95) contrast(1.08);transform:scale(1.03);transition:transform .7s cubic-bezier(.16,.8,.2,1),filter .4s ease}
+.world-transition-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(3,14,34,.96) 0%,rgba(4,22,50,.74) 38%,rgba(3,15,35,.18) 75%),linear-gradient(180deg,rgba(99,214,255,.08),rgba(225,33,57,.13))}
+.world-transition-copy{position:absolute;z-index:3;left:clamp(20px,6vw,78px);bottom:clamp(24px,9vh,96px);display:grid;gap:10px;color:#fff;text-shadow:3px 3px 0 #020b19;opacity:0;transform:translateY(18px);transition:opacity .22s ease .26s,transform .35s ease .24s}
+.world-transition-copy small,.world-transition-copy span{font-family:var(--font-display);font-size:clamp(7px,1.2vw,11px);letter-spacing:.12em;color:#7fe5ff}
+.world-transition-copy strong{font-family:var(--font-display);font-size:clamp(24px,6vw,72px);line-height:1.05;text-transform:uppercase;color:#fff}
+.world-transition-scan{position:absolute;z-index:4;left:0;right:0;top:-20%;height:18%;background:linear-gradient(180deg,transparent,rgba(104,223,255,.32),rgba(255,255,255,.8),rgba(104,223,255,.22),transparent);opacity:0;mix-blend-mode:screen}
+.world-transition.is-active::before{background:rgba(1,7,19,.64);backdrop-filter:blur(3px)}
+.world-transition.is-active .world-transition-card{left:0;top:0;width:100vw;height:100vh;border-radius:0;border-color:#4dd9ff;box-shadow:none}
+.world-transition.is-active .world-transition-art{transform:scale(1.13)}
+.world-transition.is-active .world-transition-copy{opacity:1;transform:translateY(0)}
+.world-transition.is-active .world-transition-scan{opacity:1;animation:worldScan .66s .08s ease-out both}
+.world-transition.is-revealing .world-transition-art{filter:saturate(.72) contrast(1.12) brightness(.78);transform:scale(1.18)}
+.world-transition.is-revealing .world-transition-copy{opacity:0;transform:translateY(-12px);transition-delay:0s}
+.world-transition.is-exiting{animation:worldOverlayFade .22s ease forwards}
+.world-transition.is-exiting .world-transition-card{filter:brightness(1.25);opacity:0}
+@keyframes worldScan{0%{transform:translateY(-15vh)}100%{transform:translateY(125vh)}}
+@keyframes worldOverlayFade{to{opacity:0}}
+@media(max-width:560px){.world-transition-copy{left:20px;right:20px;bottom:92px}.world-transition-copy strong{font-size:clamp(22px,10vw,46px)}}
+@media(prefers-reduced-motion:reduce){.world-transition{display:none!important}}
