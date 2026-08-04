@@ -200,12 +200,12 @@ function imageMarkup(item, size = 'card') {
 }
 
 const WORLDS = [
-  { id: 'MCU', label: 'MCU', icon: '◉', matcher: item => /Homecoming|Infinity War|Endgame|Far From Home|No Way Home|NWH Final Battle|Brand New Day/i.test(item.line || '') },
-  { id: 'Spider-Verse', label: 'Spider-Verse', icon: '✦', matcher: item => /Spider-Verse/i.test(item.line || '') },
-  { id: 'Insomniac', label: 'Insomniac', icon: '⌁', matcher: item => /Gamerverse|Marvel.?s Spider-Man|Spider-Man 1|Spider-Man 2|Miles Morales/i.test(item.line || '') },
-  { id: 'Comic Covers', label: 'Comic Covers', icon: '▤', matcher: item => /Comic Cover/i.test(`${item.type || ''} ${item.line || ''}`) },
-  { id: 'Spider-Gwen', label: 'Spider-Gwen', icon: '◇', matcher: item => /Gwen|Ghost-Spider|Gwenom/i.test(`${item.character || ''} ${item.name || ''}`) },
-  { id: 'Spider-Man 2099', label: 'Spider-Man 2099', icon: '⌬', matcher: item => /2099/i.test(`${item.character || ''} ${item.name || ''} ${item.variant || ''}`) }
+  { id: 'MCU', label: 'MCU', image: 'images/world-mcu.webp', position: '68% center', matcher: item => /Homecoming|Infinity War|Endgame|Far From Home|No Way Home|NWH Final Battle|Brand New Day/i.test(item.line || '') },
+  { id: 'Spider-Verse', label: 'Spider-Verse', image: 'images/world-spiderverse.webp', position: '58% center', matcher: item => /Spider-Verse/i.test(item.line || '') },
+  { id: 'Insomniac', label: 'Insomniac', image: 'images/world-insomniac.webp', position: '62% center', matcher: item => /Gamerverse|Marvel.?s Spider-Man|Spider-Man 1|Spider-Man 2|Miles Morales/i.test(item.line || '') },
+  { id: 'Comic Covers', label: 'Comic Covers', image: 'images/world-comic-covers.webp', position: '55% 42%', matcher: item => /Comic Cover/i.test(`${item.type || ''} ${item.line || ''}`) },
+  { id: 'Spider-Gwen', label: 'Spider-Gwen', image: 'images/world-spider-gwen.webp', position: '66% center', matcher: item => /Gwen|Ghost-Spider|Gwenom/i.test(`${item.character || ''} ${item.name || ''}`) },
+  { id: 'Spider-Man 2099', label: 'Spider-Man 2099', image: 'images/world-spider-man-2099.webp', position: '62% center', matcher: item => /2099/i.test(`${item.character || ''} ${item.name || ''} ${item.variant || ''}`) }
 ];
 
 function worldFor(id) {
@@ -264,9 +264,11 @@ function renderCollectionWorlds() {
     const percent = items.length ? Math.round((owned / items.length) * 100) : 0;
     const remaining = Math.max(0, items.length - owned);
     return `<button class="world-card" data-world="${escapeHtml(world.id)}">
-      <span class="world-icon">${world.icon}</span>
-      <strong>${escapeHtml(world.label)}</strong>
-      <small>${owned} / ${items.length} owned</small>
+      <span class="world-art" aria-hidden="true" style="background-image:url('${escapeHtml(world.image)}');background-position:${escapeHtml(world.position || 'center')}"></span>
+      <span class="world-copy">
+        <strong>${escapeHtml(world.label)}</strong>
+        <small>${owned} / ${items.length} owned</small>
+      </span>
       <div class="world-progress"><i style="width:${percent}%"></i></div>
       <em>${remaining ? `${remaining} remaining` : 'WORLD COMPLETE'}</em>
     </button>`;

@@ -625,12 +625,16 @@ body{
 
 /* Collection worlds */
 .collection-worlds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:28px}
-.world-card{position:relative;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:5px 12px;padding:16px;text-align:left;color:white;background:linear-gradient(145deg,#0b315f,#071d3c);border:2px solid #315d88;box-shadow:4px 4px 0 #020b19;transition:.16s;overflow:hidden}
-.world-card::after{content:"";position:absolute;right:-18px;bottom:-22px;width:72px;height:72px;border:10px double rgba(99,211,255,.08);transform:rotate(25deg)}
+.world-card{position:relative;isolation:isolate;display:grid;grid-template-columns:1fr;align-content:end;gap:7px;min-height:142px;padding:17px;text-align:left;color:white;background:linear-gradient(145deg,#0b315f,#071d3c);border:2px solid #315d88;box-shadow:4px 4px 0 #020b19;transition:transform .16s,border-color .16s,box-shadow .16s;overflow:hidden}
+.world-card::before{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(4,20,46,.98) 0%,rgba(5,28,58,.88) 39%,rgba(5,30,62,.32) 70%,rgba(5,24,50,.12) 100%)}
+.world-card::after{content:"";position:absolute;z-index:0;inset:0;background:linear-gradient(112deg,transparent 0 57%,rgba(95,216,255,.10) 58% 59%,transparent 60%),repeating-linear-gradient(0deg,transparent 0 5px,rgba(104,211,255,.025) 5px 6px);pointer-events:none}
 .world-card:hover{transform:translate(-2px,-2px);border-color:#63d6ff;box-shadow:6px 6px 0 #020b19}
-.world-icon{grid-row:1/3;display:grid;place-items:center;width:42px;height:42px;background:#0d4382;border:2px solid #64d7ff;color:#fff;font-size:20px}
-.world-card strong{font-family:var(--font-display);font-size:9px;line-height:1.5}.world-card small{color:#9bbbd8}.world-card em{grid-column:1/-1;color:#69d7ff;font-family:var(--font-display);font-size:7px;font-style:normal}
-.world-progress{grid-column:1/-1;height:8px;background:#03142e;border:1px solid #254f78}.world-progress i{display:block;height:100%;background:linear-gradient(90deg,#e92139,#5ed8ff);transition:width .55s ease}
+.world-art{position:absolute;z-index:-2;inset:-8px -8px -8px 30%;background-repeat:no-repeat;background-size:cover;opacity:.36;filter:saturate(.9) contrast(1.08);transition:opacity .18s,transform .22s;transform:scale(1.02);pointer-events:none}
+.world-card:hover .world-art{opacity:.49;transform:scale(1.055)}
+.world-copy{position:relative;z-index:2;display:grid;gap:4px;max-width:68%}
+.world-card strong{font-family:var(--font-display);font-size:10px;line-height:1.5;text-shadow:2px 2px 0 #020b19}.world-card small{color:#c0dbef;text-shadow:1px 1px 0 #020b19}
+.world-card em{position:relative;z-index:2;color:#69d7ff;font-family:var(--font-display);font-size:7px;font-style:normal;text-shadow:1px 1px 0 #020b19}
+.world-progress{position:relative;z-index:2;height:9px;background:rgba(3,20,46,.91);border:1px solid #3b6d95;box-shadow:0 0 0 1px rgba(0,0,0,.18)}.world-progress i{display:block;height:100%;background:linear-gradient(90deg,#e92139,#5ed8ff);transition:width .55s ease}
 .active-world-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px;padding:9px 11px;background:#0b376e;border:2px solid #5acfff;color:#d9f5ff;font-family:var(--font-display);font-size:8px}.active-world-filter button{color:#fff;background:#df2339;border:2px solid #fff;padding:6px 8px;font-family:inherit;font-size:7px}
 
 /* Grail and signed markers */

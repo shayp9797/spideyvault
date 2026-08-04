@@ -1,4 +1,4 @@
-# SpideyVault V3.6 — Collector Features
+# SpideyVault V3.7 — Collection World Artwork
 
 Adds the first collector-personalisation and dashboard expansion pass:
 
@@ -11,3 +11,9 @@ Adds the first collector-personalisation and dashboard expansion pass:
 - Keeps all existing V3.5 motion, unlock celebration, catalogue data and local-storage compatibility
 
 Signed-copy photo uploads remain on the later roadmap because they require IndexedDB and backup-size handling.
+
+
+## V3.7
+- Added user-supplied blue duotone artwork behind each Collection World progress panel.
+- Removed the generic angled square decoration.
+- Kept text and progress controls readable above the artwork.
