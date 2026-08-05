@@ -1,9 +1,9 @@
-# SpideyVault V3.9 — MCU Catalogue Update
+# SpideyVault V3.10.1 — MCU World Classification Fix
 
-Updates:
-- Restored image mappings for Iron Spider #287 Chrome and Red Chrome.
-- Restored standard and glow Iron Spider #574 mappings.
-- Corrected #1531 to Your Friendly Neighborhood Spider-Man and added its official image.
-- Corrected and mapped both #1073 common and glow chase entries.
-- Added the five villain pieces required to complete the eight-piece No Way Home Final Battle build-a-scene: The Lizard #1180, Sandman #1181, Electro #1182, Doc Ock #1184 and Green Goblin #1185.
-- Updated offline cache to V3.9.
+This build refines the MCU Collection World membership:
+
+- The Amazing Spider-Man #252 Comic Cover #40 remains in Comic Covers and is excluded from MCU.
+- Spider-Man and MJ Wedding 2-Pack remains in the main catalogue and is excluded from MCU.
+- Your Friendly Neighborhood Spider-Man entries, including Peter Parker #1531, are included in MCU.
+- Future entries using the Your Friendly Neighborhood Spider-Man line will also enter the MCU world automatically.
+- Cache bumped to V3.10.1.

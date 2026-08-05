@@ -200,7 +200,13 @@ function imageMarkup(item, size = 'card') {
 }
 
 const WORLDS = [
-  { id: 'MCU', label: 'MCU', image: 'images/world-mcu.webp', position: '68% center', matcher: item => /Homecoming|Infinity War|Endgame|Far From Home|No Way Home|NWH Final Battle|Brand New Day/i.test(item.line || '') },
+  { id: 'MCU', label: 'MCU', image: 'images/world-mcu.webp', position: '68% center', matcher: item => {
+    const line = item.line || '';
+    const isMcuLine = /Homecoming|Infinity War|Endgame|Far From Home|No Way Home|NWH Final Battle|Brand New Day|Your Friendly Neighborhood Spider-Man/i.test(line);
+    const isComicCover = /Comic Cover/i.test(`${item.type || ''} ${line}`);
+    const isNonMcuWeddingPack = /Spider-Man and MJ/i.test(item.name || '');
+    return isMcuLine && !isComicCover && !isNonMcuWeddingPack;
+  } },
   { id: 'Spider-Verse', label: 'Spider-Verse', image: 'images/world-spiderverse.webp', position: '58% center', matcher: item => /Spider-Verse/i.test(item.line || '') },
   { id: 'Insomniac', label: 'Insomniac', image: 'images/world-insomniac.webp', position: '62% center', matcher: item => /Gamerverse|Marvel.?s Spider-Man|Spider-Man 1|Spider-Man 2|Miles Morales/i.test(item.line || '') },
   { id: 'Comic Covers', label: 'Comic Covers', image: 'images/world-comic-covers.webp', position: '55% 42%', matcher: item => /Comic Cover/i.test(`${item.type || ''} ${item.line || ''}`) },
