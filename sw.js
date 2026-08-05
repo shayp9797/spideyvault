@@ -1,4 +1,4 @@
-const CACHE='spideyvault-v3.10.1';
+const CACHE='spideyvault-v3112';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./catalogue.js','./manifest.webmanifest','./icon.svg',
   './images/catalogue-comic-bg.png',
   './images/hero-upside-down-spider-man.png',
