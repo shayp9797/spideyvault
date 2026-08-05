@@ -2,7 +2,6 @@ const CACHE='spideyvault-v3.10.1';
 const ASSETS=['./','./index.html','./styles.css','./app.js','./catalogue.js','./manifest.webmanifest','./icon.svg',
   './images/catalogue-comic-bg.png',
   './images/hero-upside-down-spider-man.png',
-  './images/mcu-287-red-chrome.png',
   './images/ins-399-negative-suit.png',
   './images/ins-397-miles.png',
   './images/ins-334-advanced-suit.png','./images/spider-gwen-405.jpeg','./images/spider-gwen-153-unhooded.jpeg'];
