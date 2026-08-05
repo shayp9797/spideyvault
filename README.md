@@ -1,5 +1,5 @@
-# SpideyVault V3.11 — Red Chrome Image Fix
+# SpideyVault V3.11.1 — Spider-Verse Render Reliability Fix
 
-- Replaced the missing local Iron Spider #287 Red Chrome image reference with a verified remote product image.
-- No image-folder upload is required for this fix.
-- Updated the service-worker cache version.
+- Restores local transparent assets for #402 common, #403 and #405.
+- Routes remote Funko/Pops.today artwork through a reliable image proxy to prevent missing renders on GitHub Pages.
+- Keeps all V3.11 catalogue additions and corrections unchanged.

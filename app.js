@@ -63,9 +63,14 @@ function imageUrl(item) {
 
 function displayImageUrl(url) {
   if (!url) return '';
-  if (url.includes('pops.today/images/')) {
-    const clean = url.replace(/^https?:\/\//, '');
-    return `https://images.weserv.nl/?url=${encodeURIComponent(clean)}&output=png`;
+  if (/^\.?\/?images\//.test(url)) return url;
+
+  // Route third-party catalogue artwork through a reliable image proxy.
+  // This prevents Funko and Pops.today hotlink failures on GitHub Pages
+  // while preserving transparent PNG artwork where available.
+  if (/^https?:\/\//i.test(url)) {
+    const clean = url.replace(/^https?:\/\//i, '');
+    return `https://images.weserv.nl/?url=${encodeURIComponent(clean)}&output=png&n=-1`;
   }
   return url;
 }
