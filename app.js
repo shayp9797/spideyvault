@@ -502,7 +502,37 @@ function showUnlockBurst(item) {
   window.setTimeout(() => burst.remove(), 2000);
 }
 
+function getCenteredFlipRect(sourceRect) {
+  const viewportPadding = window.innerWidth <= 600 ? 18 : 28;
+  const maxWidth = Math.min(320, window.innerWidth - viewportPadding * 2);
+  const aspect = sourceRect.width > 0 && sourceRect.height > 0
+    ? sourceRect.width / sourceRect.height
+    : .72;
+  let width = maxWidth;
+  let height = width / aspect;
+  const maxHeight = Math.min(560, window.innerHeight - viewportPadding * 2);
+  if (height > maxHeight) {
+    height = maxHeight;
+    width = height * aspect;
+  }
+  return {
+    left: (window.innerWidth - width) / 2,
+    top: (window.innerHeight - height) / 2,
+    width,
+    height
+  };
+}
+
+function rectIsVisible(rect) {
+  return rect.width > 0 && rect.height > 0 &&
+    rect.bottom > 0 && rect.right > 0 &&
+    rect.top < window.innerHeight && rect.left < window.innerWidth;
+}
+
 function makeFlipStage(sourceCard, startRect, endRect, reverse = false) {
+  const overlay = document.createElement('div');
+  overlay.className = 'card-flip-overlay';
+
   const clone = document.createElement('div');
   clone.className = `card-flip-stage ${reverse ? 'is-reverse' : ''}`;
   clone.style.left = `${startRect.left}px`;
@@ -510,39 +540,72 @@ function makeFlipStage(sourceCard, startRect, endRect, reverse = false) {
   clone.style.width = `${startRect.width}px`;
   clone.style.height = `${startRect.height}px`;
   clone.innerHTML = `<div class="card-flip-inner"><div class="card-flip-front">${sourceCard.innerHTML}</div><div class="card-flip-back"><span class="flip-spider">SV</span><span>${reverse ? 'RETURNING TO VAULT' : 'OPENING VAULT'}</span></div></div>`;
-  document.body.appendChild(clone);
-  requestAnimationFrame(() => {
-    clone.style.setProperty('--flip-x', `${endRect.left - startRect.left}px`);
-    clone.style.setProperty('--flip-y', `${endRect.top - startRect.top}px`);
-    clone.style.setProperty('--flip-scale-x', `${endRect.width / startRect.width}`);
-    clone.style.setProperty('--flip-scale-y', `${endRect.height / startRect.height}`);
+
+  document.body.append(overlay, clone);
+  document.body.classList.add('card-flip-active');
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    overlay.classList.add('is-visible');
+    clone.style.left = `${endRect.left}px`;
+    clone.style.top = `${endRect.top}px`;
+    clone.style.width = `${endRect.width}px`;
+    clone.style.height = `${endRect.height}px`;
     clone.classList.add('is-flipping');
-  });
-  return clone;
+  }));
+
+  const cleanup = () => {
+    clone.remove();
+    overlay.remove();
+    document.body.classList.remove('card-flip-active');
+  };
+  return { clone, overlay, cleanup };
 }
 
 function closeDetail({ reverse = true } = {}) {
   const dialog = $('#detailDialog');
-  if (!dialog.open) return;
+  if (!dialog.open || document.body.classList.contains('card-flip-active')) return;
+
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const targetCard = state.openOrigin ? document.querySelector(`.card[data-id="${CSS.escape(state.openOrigin.id)}"]`) : null;
-  if (!reverse || reducedMotion || !targetCard) {
+  const targetCard = state.openOrigin
+    ? document.querySelector(`.card[data-id="${CSS.escape(state.openOrigin.id)}"]`)
+    : null;
+
+  if (!reverse || reducedMotion) {
     dialog.close();
     state.openOrigin = null;
     return;
   }
-  const targetRect = targetCard.getBoundingClientRect();
-  const dialogRect = dialog.getBoundingClientRect();
-  const startRect = {
-    left: dialogRect.left + dialogRect.width / 2 - targetRect.width / 2,
-    top: dialogRect.top + Math.min(90, dialogRect.height * .16),
-    width: targetRect.width,
-    height: targetRect.height
+
+  const sourceRect = targetCard?.getBoundingClientRect();
+  const referenceRect = sourceRect && sourceRect.width && sourceRect.height
+    ? sourceRect
+    : { width: Math.min(300, window.innerWidth * .8), height: Math.min(440, window.innerHeight * .68) };
+  const centerRect = getCenteredFlipRect(referenceRect);
+  const canReturnToCard = targetCard && rectIsVisible(sourceRect);
+  const endRect = canReturnToCard ? sourceRect : {
+    left: centerRect.left + centerRect.width * .12,
+    top: centerRect.top + centerRect.height * .12,
+    width: centerRect.width * .76,
+    height: centerRect.height * .76
   };
-  dialog.close();
-  const clone = makeFlipStage(targetCard, startRect, targetRect, true);
-  window.setTimeout(() => clone.classList.add('is-fading'), 520);
-  window.setTimeout(() => clone.remove(), 720);
+
+  const visualSource = targetCard || document.createElement('article');
+  if (!targetCard) {
+    visualSource.className = 'card';
+    visualSource.innerHTML = $('#detailContent')?.innerHTML || '';
+  }
+
+  const transition = makeFlipStage(visualSource, centerRect, endRect, true);
+  dialog.classList.add('detail-closing');
+  window.setTimeout(() => dialog.close(), 70);
+  window.setTimeout(() => {
+    transition.clone.classList.add('is-fading');
+    transition.overlay.classList.remove('is-visible');
+  }, canReturnToCard ? 560 : 430);
+  window.setTimeout(() => {
+    transition.cleanup();
+    dialog.classList.remove('detail-closing');
+  }, canReturnToCard ? 760 : 620);
   state.openOrigin = null;
 }
 
@@ -623,8 +686,8 @@ document.addEventListener('click', event => {
     $('#signedFields').classList.toggle('hidden', !event.target.checked);
   }
 
-  const selectedCard = event.target.closest('.card');
-  if (selectedCard && !selectedCard.classList.contains('card-opening')) {
+  const selectedCard = event.target.closest('.card[data-id]');
+  if (selectedCard && !selectedCard.classList.contains('card-opening') && !document.body.classList.contains('card-flip-active')) {
     const id = selectedCard.dataset.id;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     state.openOrigin = { id };
@@ -632,22 +695,17 @@ document.addEventListener('click', event => {
       openDetail(id);
     } else {
       selectedCard.classList.add('card-opening');
-      const rect = selectedCard.getBoundingClientRect();
-      const targetWidth = Math.min(360, window.innerWidth * .78);
-      const targetHeight = Math.min(rect.height * 1.08, window.innerHeight * .58);
-      const targetRect = {
-        left: (window.innerWidth - targetWidth) / 2,
-        top: Math.max(74, (window.innerHeight - targetHeight) / 2),
-        width: targetWidth,
-        height: targetHeight
-      };
-      const clone = makeFlipStage(selectedCard, rect, targetRect);
+      selectedCard.classList.remove('is-tilting');
+      const startRect = selectedCard.getBoundingClientRect();
+      const centerRect = getCenteredFlipRect(startRect);
+      const transition = makeFlipStage(selectedCard, startRect, centerRect);
       window.setTimeout(() => {
         openDetail(id);
-        clone.classList.add('is-fading');
-      }, 500);
+        transition.clone.classList.add('is-fading');
+        transition.overlay.classList.remove('is-visible');
+      }, 570);
       window.setTimeout(() => {
-        clone.remove();
+        transition.cleanup();
         selectedCard.classList.remove('card-opening');
       }, 760);
     }

@@ -671,3 +671,74 @@ body.world-transitioning{overflow:hidden}
 @keyframes worldOverlayFade{to{opacity:0}}
 @media(max-width:560px){.world-transition-copy{left:20px;right:20px;bottom:92px}.world-transition-copy strong{font-size:clamp(22px,10vw,46px)}}
 @media(prefers-reduced-motion:reduce){.world-transition{display:none!important}}
+
+/* V3.12 uniform fixed-layer collectible-card transition */
+body.card-flip-active{overflow:hidden}
+.card-flip-overlay{
+  position:fixed;
+  z-index:9997;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  background:rgba(1,8,22,.68);
+  backdrop-filter:blur(2px);
+  transition:opacity .2s ease;
+}
+.card-flip-overlay.is-visible{opacity:1}
+.card-flip-stage{
+  position:fixed!important;
+  z-index:9998!important;
+  margin:0!important;
+  transform:none!important;
+  transform-origin:center center!important;
+  perspective:1400px!important;
+  pointer-events:none!important;
+  box-sizing:border-box!important;
+  transition:
+    left .28s cubic-bezier(.2,.82,.24,1),
+    top .28s cubic-bezier(.2,.82,.24,1),
+    width .28s cubic-bezier(.2,.82,.24,1),
+    height .28s cubic-bezier(.2,.82,.24,1),
+    opacity .16s ease!important;
+  will-change:left,top,width,height,opacity;
+}
+.card-flip-stage.is-flipping{transform:none!important}
+.card-flip-inner{
+  width:100%!important;
+  height:100%!important;
+  transform-style:preserve-3d!important;
+  transform-origin:center center!important;
+  transition:transform .48s .08s cubic-bezier(.18,.78,.22,1)!important;
+  will-change:transform;
+}
+.card-flip-stage.is-flipping .card-flip-inner{transform:rotateY(180deg)!important}
+.card-flip-stage.is-reverse .card-flip-inner{transform:rotateY(180deg)!important}
+.card-flip-stage.is-reverse.is-flipping .card-flip-inner{transform:rotateY(360deg)!important}
+.card-flip-stage.is-fading{opacity:0!important}
+.card-flip-front,.card-flip-back{width:100%;height:100%;box-sizing:border-box}
+.card-flip-front{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.card-flip-front>.pop-image{
+  flex:1 1 58%;
+  min-height:0;
+  width:100%;
+  height:auto!important;
+  aspect-ratio:auto!important;
+}
+.card-flip-front>.card-content{
+  flex:0 0 42%;
+  min-height:0;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+#detailDialog.detail-closing{opacity:0;transition:opacity .12s ease}
+@media(max-width:600px){
+  .card-flip-stage{perspective:1100px!important}
+  .card-flip-front,.card-flip-back{box-shadow:6px 8px 0 rgba(1,8,22,.78)!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .card-flip-overlay,.card-flip-stage{display:none!important}
+}
